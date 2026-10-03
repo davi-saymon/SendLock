@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SendLock - Compartilhamento Temporário</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}">
+</head>
+<body class="dark-theme-inicio">
+    <main style="text-align: center; margin-top: 50px; font-family: sans-serif;">
+        <h1>🔒 SendLock</h1>
+        <p>Plataforma de Compartilhamento Temporário de Arquivos</p>
+        <form action="/criar-sala" method="POST">
+            <button style="padding: 12px 24px; font-size: 16px; cursor: pointer;">
+                Criar Sala Temporária
+            </button>
+        </form>
+    </main>
+</body>
+</html>

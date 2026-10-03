@@ -1,0 +1,124 @@
+@import url('https://fonts.cdnfonts.com/css/glacial-indifference');
+
+/* Estilos Globais */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Glacial Indifference', 'Segoe UI', sans-serif;
+}
+
+body.dark-theme-inicio {
+    background-color: #0d1117;
+}
+
+main h1 {
+    color: #f0f6fc;
+}
+
+main p {
+    color: #8b949e;
+}
+
+body.dark-theme {
+    background-color: #0d1117;
+    color: #c9d1d9;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 600px;
+}
+
+/* Cabeçalho */
+.header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.header h1 {
+    color: #f0f6fc;
+    font-size: 2rem;
+    margin-bottom: 12px;
+}
+
+/* Tags de Status */
+.badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    background-color: #21262d;
+    color: #8b949e;
+    border: 1px solid #30363d;
+    margin: 2px;
+}
+
+.admin-badge {
+    background-color: #238636;
+    color: #ffffff;
+    border-color: #388bfd;
+}
+
+/* Card Principal */
+.card {
+    background-color: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    text-align: center;
+}
+
+.card h2 {
+    color: #f0f6fc;
+    font-size: 1.4rem;
+    margin-bottom: 8px;
+}
+
+.card p {
+    color: #8b949e;
+    font-size: 0.95rem;
+    margin-bottom: 24px;
+}
+
+/* Área de Upload */
+.upload-box {
+    border: 2px dashed #30363d;
+    border-radius: 8px;
+    padding: 40px 20px;
+    background-color: #0d1117;
+    transition: border-color 0.2s ease;
+}
+
+.upload-box:hover {
+    border-color: #58a6ff;
+}
+
+.upload-box p {
+    margin-bottom: 16px;
+    color: #c9d1d9;
+}
+
+/* Botões */
+.btn-primary {
+    background-color: #238636;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-primary:hover {
+    background-color: #2ea043;
+}
