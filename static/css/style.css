@@ -8,20 +8,40 @@
     font-family: 'Glacial Indifference', 'Segoe UI', sans-serif;
 }
 
-body.dark-theme-inicio {
-    background-color: #0d1117;
+body.tema-escuro-inicio {
+    background-color: #181820;
+}
+
+main.inicio {
+    margin-top: 200px;
 }
 
 main h1 {
     color: #f0f6fc;
+    text-align: center; 
+    margin-top: 50px;
 }
 
 main p {
-    color: #8b949e;
+    /* color: #5ccfff;*/
+    color: #f0f6fc;
+    text-align: center;
+    font-size: 17px; 
+    margin-top: 10px;
+    margin-bottom: 20px;
 }
 
+form {
+    padding: 12px 24px; 
+    font-size: 16px; 
+    cursor: pointer;
+    text-align: center;
+}
+
+/* ---------------------------------------*/
+
 body.dark-theme {
-    background-color: #0d1117;
+    background-color: #181820;
     color: #c9d1d9;
     min-height: 100vh;
     display: flex;
@@ -61,7 +81,7 @@ body.dark-theme {
 }
 
 .admin-badge {
-    background-color: #238636;
+    background-color: #515151;
     color: #ffffff;
     border-color: #388bfd;
 }
@@ -108,7 +128,7 @@ body.dark-theme {
 
 /* Botões */
 .btn-primary {
-    background-color: #238636;
+    background-color: #4b4b4b;
     color: #ffffff;
     border: none;
     padding: 10px 20px;
@@ -120,5 +140,5 @@ body.dark-theme {
 }
 
 .btn-primary:hover {
-    background-color: #2ea043;
+    background-color: #858685;
 }
