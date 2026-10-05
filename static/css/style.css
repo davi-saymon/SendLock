@@ -10,16 +10,29 @@
 
 body.tema-escuro-inicio {
     background-color: #181820;
+    padding: 20px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+
+.container-inicio {
+    width: 100%;
+    max-width: 600px;
 }
 
 main.inicio {
     margin-top: 200px;
+    border: 0.1px solid #193f5a;
+    background-color: #1d2335;
+    border-radius: 15px;
+    padding: 35px;
 }
 
 main h1 {
     color: #f0f6fc;
     text-align: center; 
-    margin-top: 50px;
+    
 }
 
 main p {
@@ -28,14 +41,28 @@ main p {
     text-align: center;
     font-size: 17px; 
     margin-top: 10px;
-    margin-bottom: 20px;
 }
 
 form {
-    padding: 12px 24px; 
+    text-align: center;
+}
+
+button.botao-inicio {
+    margin-top: 45px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px; 
     font-size: 16px; 
     cursor: pointer;
     text-align: center;
+    color: #ffffff;
+    background: linear-gradient(to right, #007dff, #00c0ff);
+    transition: transform 0.3s ease;
+    box-shadow: 0 0 10px #00c0ff;
+}
+
+button.botao-inicio:hover {
+    transform: scale(1.03);
 }
 
 /* ---------------------------------------*/
@@ -58,13 +85,13 @@ body.dark-theme {
 /* Cabeçalho */
 .header {
     text-align: center;
-    margin-bottom: 24px;
+    
 }
 
 .header h1 {
     color: #f0f6fc;
     font-size: 2rem;
-    margin-bottom: 12px;
+    margin-bottom: 5px;
 }
 
 /* Tags de Status */
@@ -81,7 +108,7 @@ body.dark-theme {
 }
 
 .admin-badge {
-    background-color: #515151;
+    background: linear-gradient(to right, #ff9f11, #ffb241);
     color: #ffffff;
     border-color: #388bfd;
 }
@@ -94,6 +121,7 @@ body.dark-theme {
     padding: 30px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
     text-align: center;
+    margin-top: 20px;
 }
 
 .card h2 {
@@ -136,9 +164,9 @@ body.dark-theme {
     font-weight: 600;
     border-radius: 6px;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: background-color 1s ease;
 }
 
 .btn-primary:hover {
-    background-color: #858685;
+    background-color: #00c0ff;
 }

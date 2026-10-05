@@ -7,14 +7,16 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}">
 </head>
 <body class="tema-escuro-inicio">
-    <main class="inicio">
-        <h1>🔒 SendLock</h1>
-        <p>Plataforma de Compartilhamento Temporário de Arquivos</p>
-        <form action="/criar-sala" method="POST">
-            <button style="padding: 12px 24px; font-size: 18px; cursor: pointer;">
-                Criar Sala Temporária
-            </button>
-        </form>
-    </main>
+    <div class="container-inicio">
+        <main class="inicio">
+            <h1>🔒 SendLock</h1>
+            <p>Plataforma de Compartilhamento Temporário de Arquivos</p>
+            <form action="/criar-sala" method="POST">
+                <button class="botao-inicio">
+                    Criar Sala Temporária
+                </button>
+            </form>
+        </main>
+    </div>
 </body>
 </html>
