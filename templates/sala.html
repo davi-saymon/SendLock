@@ -24,8 +24,9 @@
 
             {% if is_admin %}
             
+
             <!-- Formulário de Upload -->
-            <form action="{{ url_for('upload_arquivo', sala_id = sala_id) }}" method="POST" enctype="multipart/form-data">
+            <form id="uploadForm" action="{{ url_for('upload_arquivo', sala_id = sala_id) }}" method="POST" enctype="multipart/form-data">
                 <div class="upload-box">
                     <p>Arraste os arquivos aqui ou clique para selecionar</p>
                     <input type="file" name="arquivo" id="fileInput" onchange="this.form.submit()" hidden>
@@ -33,7 +34,60 @@
                         Selecionar Arquivos
                     </button>
                 </div>
+
+
+                <!-- Barra de Progresso-->
+                <div class="progresso_container" id="progressoContainer">
+                    <div class="barra_carregamento" id="barraCarregamento"></div>
+                </div>
+                <p class="texto_carregamento" id="textoCarregamento"></p>
             </form>
+
+            <script>
+                const fileInput = document.getElementById('fileInput');
+                const uploadForm = document.getElementById('uploadForm');
+                const progressoContainer = document.getElementById('progressoContainer');
+                const barraCarregamento = document.getElementById('barraCarregamento');
+                const textoCarregamento = document.getElementById('textoCarregamento');
+
+                fileInput.addEventListener('change', function() {
+                    if (fileInput.files.length > 0) {
+                        const file = fileInput.files[0];
+
+                        // Mostra a barra e o texto
+                        progressoContainer.style.display = 'block';
+                        textoCarregamento.style.display = 'block';
+                        textoCarregamento.innerText = `Carregando: ${file.name}...`;
+
+                        // Cria os dados do formulário para envio via AJAX
+                        const formData = new FormData(uploadForm);
+                        const xhr = new XMLHttpRequest();
+
+                        // Monitora o progresso real
+                        xhr.upload.addEventListener('progress', function(e) {
+                            if (e.lengthComputable) {
+                                const percentCompleta = Math.round((e.loaded / e.total) * 100);
+                                barraCarregamento.style.width = percentCompleta + '%';
+                                textoCarregamento.innerText = `Carregando: ${file.name} — ${percentCompleta}%`;
+                            }
+                        });
+
+                        // Quando o upload terminar...
+                        xhr.addEventListener('load', function() {
+                            if (xhr.status === 200) {
+                                // Recarrega a página para mostrar o arquivo na lista
+                                window.location.reload();
+                            } else {
+                                alert('Erro ao enviar o arquivo.')
+                            }
+                        });
+
+                        // Envia para a rota do Flask
+                        xhr.open('POST', uploadForm.action, true);
+                        xhr.send(formData);
+                    }
+                });
+            </script>
             {% else %}
             <p><em>Apenas o Administrador pode enviar arquivos nesta sala.</em></p>
             {% endif %}
