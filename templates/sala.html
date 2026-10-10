@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sala {{ sala_id }} - SandLock</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}">
+</head>
+<body class="dark-theme">
+    <div class="container">
+        <header class="header">
+            <h1>🔒 SendLock</h1>
+            <span class="badge">Sala: {{ sala_id }}</span>
+            {% if is_admin %}
+                <span class="badge admin-badge">👑 Administrador</span>
+            {% else %}
+                <span class="badge guest-badge">👤 Convidado</span>
+            {% endif %}
+        </header>
+            
+        <main class="card">
+            <h2>Compartilhamento de Arquivos</h2>
+            <p>Envie arquivos temporários sem necessidade de cadastro.</p>
+
+            {% if is_admin %}
+            
+            <!-- Formulário de Upload -->
+            <form action="{{ url_for('upload_arquivo', sala_id = sala_id) }}" method="POST" enctype="multipart/form-data">
+                <div class="upload-box">
+                    <p>Arraste os arquivos aqui ou clique para selecionar</p>
+                    <input type="file" name="arquivo" id="fileInput" onchange="this.form.submit()" hidden>
+                    <button type="button" class="btn-primary" onclick="document.getElementById('fileInput').click()">
+                        Selecionar Arquivos
+                    </button>
+                </div>
+            </form>
+            {% else %}
+            <p><em>Apenas o Administrador pode enviar arquivos nesta sala.</em></p>
+            {% endif %}
+
+            <!-- Lista de Arquivos Enviados -->
+             <div class="container_arq_env">
+                <h3>Arquivos da sala:</h3>
+                {% if arquivos %}
+                    <ul>
+                        {% for item in arquivos %}
+                            <li>
+                                📄 {{ item }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>Nenhum arquivo enviado ainda.</p>
+                {% endif %}
+             </div>
+        </main>
+    </div>
+</body>
+</html>

@@ -1,0 +1,206 @@
+@import url('https://fonts.cdnfonts.com/css/glacial-indifference');
+
+/* Estilos Globais */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Glacial Indifference', 'Segoe UI', sans-serif;
+}
+
+body.tema-escuro-inicio {
+    background-color: #181820;
+    padding: 20px;
+    min-height: 100vh;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+
+.container-inicio {
+    width: 100%;
+    max-width: 600px;
+}
+
+main.inicio {
+    border: 0.1px solid #193f5a;
+    background-color: #1d2335;
+    border-radius: 12px;
+    padding: 35px;
+}
+
+main h1 {
+    color: #f0f6fc;
+    text-align: center; 
+    
+}
+
+main p {
+    /* color: #5ccfff;*/
+    color: #9dbee6;
+    text-align: center;
+    font-size: 17px; 
+    margin-top: 10px;
+}
+
+form {
+    text-align: center;
+}
+
+button.botao-inicio {
+    margin-top: 45px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px; 
+    font-size: 16px; 
+    cursor: pointer;
+    text-align: center;
+    color: #ffffff;
+    background: linear-gradient(to right, #007dff, #00c0ff);
+    transition: transform 0.3s ease, box-shadow 0.2s ease;
+    
+}
+
+button.botao-inicio:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0 10px #00c0ff;
+}
+
+/* ---------------------------------------*/
+
+body.dark-theme {
+    background-color: #181820;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 600px;
+}
+
+/* Cabeçalho */
+.header {
+    text-align: center;
+    
+}
+
+.header h1 {
+    color: #f0f6fc;
+    font-size: 2rem;
+    margin-bottom: 5px;
+}
+
+/* Tags de Status */
+.badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    background-color: #1d2335;
+    color: #9dbee6;
+    border: 1px solid #193f5a;
+    margin: 2px;
+}
+
+.admin-badge {
+    background: linear-gradient(to right, #e95d24, #ffb241);
+    color: #ffffff;
+    border: none;
+}
+
+/* Card Principal */
+.card {
+    background-color: #1d2335;
+    border: 1px solid #193f5a;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    text-align: center;
+    margin-top: 20px;
+}
+
+.card h2 {
+    color: #f0f6fc;
+    font-size: 1.4rem;
+    margin-bottom: 8px;
+}
+
+.card p {
+    color: #9dbee6;
+    font-size: 0.95rem;
+    margin-bottom: 24px;
+}
+
+/* Área de Upload */
+.upload-box {
+    border: 2px dashed #193f5a;
+    border-radius: 8px;
+    padding: 40px 20px;
+    background-color: #111522;
+    transition: border-color 0.2s ease;
+}
+
+.upload-box:hover {
+    border-color: #00c0ff;
+}
+
+.upload-box p {
+    margin-bottom: 16px;
+    color: #9dbee6;
+}
+
+/* Botões */
+.btn-primary {
+    background-color: #193f5a;
+    color: #f0f6fc;
+    border: none;
+    padding: 10px 20px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.2s ease;
+}
+
+.btn-primary:hover {
+    background-color: #00c0ff;
+    box-shadow: 0 0 10px #00c0ff;
+}
+
+/* Lista de Arquivos Enviados */
+
+div.container_arq_env {
+    margin-top: 25px;
+    text-align: left;
+}
+
+.container_arq_env h3 {
+    font-size: 1.1rem;
+    color: #f0f6fc;
+    margin-bottom: 10px;
+}
+
+.container_arq_env ul {
+    list-style: none;
+    padding: 0;
+}
+
+.container_arq_env li {
+    background: #111522;
+    padding: 10px 15px;
+    border-radius: 6px;
+    border: 1px solid #193f5a;
+    margin-bottom: 8px;
+    color: #9dbee6;
+    cursor: pointer;
+}
+
+.container_arq_env p {
+    font-size: 0.85rem;
+    color: #9dbee6;
+}
