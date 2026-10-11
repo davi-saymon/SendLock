@@ -29,7 +29,7 @@
             <form id="uploadForm" action="{{ url_for('upload_arquivo', sala_id = sala_id) }}" method="POST" enctype="multipart/form-data">
                 <div class="upload-box">
                     <p>Arraste os arquivos aqui ou clique para selecionar</p>
-                    <input type="file" name="arquivo" id="fileInput" onchange="this.form.submit()" hidden>
+                    <input type="file" name="arquivo" id="fileInput" multiple hidden>
                     <button type="button" class="btn-primary" onclick="document.getElementById('fileInput').click()">
                         Selecionar Arquivos
                     </button>
@@ -52,12 +52,13 @@
 
                 fileInput.addEventListener('change', function() {
                     if (fileInput.files.length > 0) {
-                        const file = fileInput.files[0];
+                        const totalFiles = fileInput.files.length;
+                        const textoMsg = totalFiles > 1 ? `${totalFiles} arquivos selecionados` : fileInput.files[0].name;
 
                         // Mostra a barra e o texto
                         progressoContainer.style.display = 'block';
                         textoCarregamento.style.display = 'block';
-                        textoCarregamento.innerText = `Carregando: ${file.name}...`;
+                        textoCarregamento.innerText = `Carregando: ${textoMsg}...`;
 
                         // Cria os dados do formulário para envio via AJAX
                         const formData = new FormData(uploadForm);
@@ -68,7 +69,7 @@
                             if (e.lengthComputable) {
                                 const percentCompleta = Math.round((e.loaded / e.total) * 100);
                                 barraCarregamento.style.width = percentCompleta + '%';
-                                textoCarregamento.innerText = `Carregando: ${file.name} — ${percentCompleta}%`;
+                                textoCarregamento.innerText = `Carregando: ${textoMsg} — ${percentCompleta}%`;
                             }
                         });
 
@@ -87,11 +88,51 @@
                         xhr.send(formData);
                     }
                 });
+
+                // Upload pela área (drag and drop)
+                const uploadBox = document.querySelector('.upload-box');
+
+                // Previne o comportamento padrão (abrir o arquivo no computador)
+                // Adiciona efeito quando o arquivo entra
+                ['dragenter', 'dragover'].forEach(eventName => {
+                    uploadBox.addEventListener(eventName, function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        uploadBox.classList.add('drag-over');
+                    }, false);
+                });
+
+                // Remove efeito quando o arquivo sai ou é solto
+                ['dragleave', 'drop'].forEach(eventName => {
+                    uploadBox.addEventListener(eventName, function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        uploadBox.classList.remove('drag-over');
+                    }, false);
+                });
+
+                // Quando soltar os arquivos
+                uploadBox.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    const droppedFiles = e.dataTransfer.files;
+
+                    if (droppedFiles.length > 0) {
+                        fileInput.files = droppedFiles;
+
+                        // Dispara o evento 'change' para acionar o upload e a barra
+                        const event = new Event('change');
+                        fileInput.dispatchEvent(event);
+                    }
+                });
+
             </script>
             {% else %}
             <p><em>Apenas o Administrador pode enviar arquivos nesta sala.</em></p>
             {% endif %}
-
+        </main>
+        <main class="card-arquivos">
             <!-- Lista de Arquivos Enviados -->
              <div class="container_arq_env">
                 <h3>Arquivos da sala:</h3>

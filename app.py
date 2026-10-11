@@ -48,20 +48,21 @@ def upload_arquivo(sala_id):
         flash('Nenhum arquivo enviado.')
         return redirect(url_for('ver_sala', sala_id = sala_id, admin = 'true'))
 
-    arquivo = request.files['arquivo']
+    arquivos = request.files.getlist('arquivo')
 
-    if arquivo.filename == '':
+    if not arquivos or arquivos[0].filename == '':
         flash('Nenhum arquivo selecionado.')
         return redirect(url_for('ver_sala', sala_id = sala_id, admin = 'true'))
 
-    if arquivo:
-        # Sanitiza (Detetiza kk) o nome do arquivo para segurança
-        nome_seguro = secure_filename(arquivo.filename)
-        caminho_salvar = os.path.join(app.config['UPLOAD_FOLDER'], nome_seguro)
-        arquivo.save(caminho_salvar)
+    for arquivo in arquivos:
+        if arquivo:
+            # Sanitiza (Detetiza kk) o nome do arquivo para segurança
+            nome_seguro = secure_filename(arquivo.filename)
+            caminho_salvar = os.path.join(app.config['UPLOAD_FOLDER'], nome_seguro)
+            arquivo.save(caminho_salvar)
 
-        flash('Arquivo enviado com sucesso!')
-        return redirect(url_for('ver_sala', sala_id = sala_id, admin = 'true'))
+    flash('Arquivo enviado com sucesso!')
+    return redirect(url_for('ver_sala', sala_id = sala_id, admin = 'true'))
     
 
 if __name__ == '__main__':
