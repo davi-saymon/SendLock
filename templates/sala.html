@@ -147,10 +147,22 @@
                                     <span>{{ item }}</span>
                                  </div>
 
-                                <!-- Botão de download -->
-                                <a href="{{ url_for('download_arquivo', sala_id=sala_id, filename=item) }}" class="bt-download" title="Baixar arquivo">
-                                    <i class="fas fa-download"></i>
-                                </a>
+                                
+                                <div class="acoes-bt-de">
+                                    <!-- Botão de download -->
+                                    <a href="{{ url_for('download_arquivo', sala_id=sala_id, filename=item) }}" class="bt-download" title="Baixar arquivo">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+
+                                    <!-- Botão de excluir -->
+                                    {% if is_admin %}
+                                    <form action="{{ url_for('deletar_arquivo', sala_id=sala_id, filename=item) }}" class="bt-antapagar" method="POST" onsubmit="return confirm('Tem certeza que deseja apagar o arquivo?');">
+                                        <button type="submit" class="bt-apagar" title="Excluir arquivo">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </div>
                             </li>
                         {% endfor %}
                     </ul>

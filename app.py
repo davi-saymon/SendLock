@@ -1,6 +1,6 @@
 import os
 import uuid
-from flask import Flask, render_template, redirect, url_for, request, flash, send_from_directory, abort
+from flask import Flask, render_template, redirect, url_for, request, flash, send_from_directory, abort, session
 from werkzeug.utils import secure_filename
 
 
@@ -35,15 +35,23 @@ def criar_sala():
     # Gerar um ID único e curto para a sala
     sala_id = str(uuid.uuid4())[:8]
 
+    # Guarda quem é o admin
+    session[f'admin_{sala_id}'] = True
+
     # Redireciona o usuário para a página da sala recém-criada
-    return redirect(url_for('ver_sala', sala_id = sala_id, admin = 'true'))
+    return redirect(url_for('ver_sala', sala_id = sala_id))
 
 
 
 # Rota da Sala Temporária
 @app.route('/sala/<sala_id>')
 def ver_sala(sala_id):
-    is_admin = request.args.get('admin') == 'true'
+    # Se a URL vier com ?admin=true, guarda na sessão
+    if request.args.get('admin') == 'true':
+        session[f'admin_{sala_id}'] = True
+
+    # Verifica o estado de admin da sessão
+    is_admin = session.get(f'admin_{sala_id}', False)
 
     # Listar os arquivos armazenados na pasta e uploads
     arquivos = os.listdir(app.config['UPLOAD_FOLDER'])
@@ -88,6 +96,23 @@ def download_arquivo(sala_id, filename):
         return send_from_directory(caminho_sala, filename, as_attachment=True)
     except FileNotFoundError:
         abort(404, description='Arquivo não encontrado!')
+
+
+
+# Excluir arquivos
+@app.route('/sala/<sala_id>/deletar/<filename>', methods=['POST'])
+def deletar_arquivo(sala_id, filename):
+    # Verifica se é o Admin
+    if not session.get(f'admin_{sala_id}', False):
+        return redirect(url_for('ver_sala', sala_id = sala_id))
+
+    caminho_pasta = app.config['UPLOAD_FOLDER']
+    caminho_arquivo = os.path.join(caminho_pasta, filename)
+
+    if os.path.exists(caminho_arquivo):
+        os.remove(caminho_arquivo)
+
+    return redirect(url_for('ver_sala', sala_id = sala_id))
 
 
 

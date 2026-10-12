@@ -248,6 +248,8 @@ div.container_arq_env {
     color: #9dbee6;
 }
 
+/* Download */
+
 .nome-arquivo {
     display: flex;
     align-items: center;
@@ -269,7 +271,7 @@ div.container_arq_env {
     background: #193f5a;
     border-radius: 4px;
     text-decoration: none;
-    transition: background 0.2s;
+    transition: background 0.4s, box-shadow 0.2s;
 }
 
 .bt-download:hover {
@@ -280,10 +282,6 @@ div.container_arq_env {
 .bt-download i {
     color: #f0f6fc;
     font-size: 1rem;
-}
-
-.bt-download i:hover {
-    color: #f0f6fc;
 }
 
 /* Barra de carregamento */
@@ -313,3 +311,40 @@ div.container_arq_env {
     margin-top: 5px;
     display: none;
 }
+
+/* Excluir */
+
+.acoes-bt-de {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.bt-antapagar {
+    display: inline;
+}
+
+.bt-apagar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: #193f5a;
+    border: 1px solid #ff0000;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.4s, color 0.4s, box-shadow 0.2s;
+}
+
+.bt-apagar i {
+    color: #ff0000;
+}
+
+.bt-apagar:hover, 
+.bt-apagar:hover i {
+    background: #ff0000;
+    color: #f0f6fc;
+    box-shadow: 0 0 7px #ff0000;
+}
+
