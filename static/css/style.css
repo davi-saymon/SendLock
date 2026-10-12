@@ -239,11 +239,51 @@ div.container_arq_env {
     color: #9dbee6;
     cursor: pointer;
     font-size: 1.0625rem;
+    display: flex;
+    justify-content: space-between;
 }
 
 .container_arq_env p {
     font-size: 1.090rem;
     color: #9dbee6;
+}
+
+.nome-arquivo {
+    display: flex;
+    align-items: center;
+    font-size: 1.1rem;
+    
+}
+
+.nome-arquivo i {
+    padding-right:7px;
+    color: #f0f6fc;
+}
+
+.bt-download {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: #193f5a;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.bt-download:hover {
+    background: #00c0ff;
+    box-shadow: 0 0 7px #00c0ff;
+}
+
+.bt-download i {
+    color: #f0f6fc;
+    font-size: 1rem;
+}
+
+.bt-download i:hover {
+    color: #f0f6fc;
 }
 
 /* Barra de carregamento */

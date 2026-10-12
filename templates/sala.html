@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sala {{ sala_id }} - SandLock</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="dark-theme">
     <div class="container">
@@ -140,7 +141,16 @@
                     <ul>
                         {% for item in arquivos %}
                             <li>
-                                📄 {{ item }}
+                                <!-- Nome do arquivo -->
+                                 <div class="nome-arquivo">
+                                    <i class="fas fa-file-alt"></i>
+                                    <span>{{ item }}</span>
+                                 </div>
+
+                                <!-- Botão de download -->
+                                <a href="{{ url_for('download_arquivo', sala_id=sala_id, filename=item) }}" class="bt-download" title="Baixar arquivo">
+                                    <i class="fas fa-download"></i>
+                                </a>
                             </li>
                         {% endfor %}
                     </ul>

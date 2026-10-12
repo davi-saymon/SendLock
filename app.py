@@ -1,25 +1,33 @@
 import os
 import uuid
-from flask import Flask, render_template, redirect, url_for, request, flash
+from flask import Flask, render_template, redirect, url_for, request, flash, send_from_directory, abort
 from werkzeug.utils import secure_filename
+
 
 
 app = Flask(__name__)
 app.secret_key = 'chave-secreta-sendlock'
 
+
+
 # Configração da pasta de upload
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+
 
 # Cria a pasta de upload, caso não exista
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
 
+
 # Rota principal (Página de início)
 @app.route('/')
 def inicio():
     return render_template('index.html')
+
+
 
 # Rota que cria uma nova sala e redireciona
 @app.route('/criar-sala', methods=['POST'])
@@ -30,6 +38,8 @@ def criar_sala():
     # Redireciona o usuário para a página da sala recém-criada
     return redirect(url_for('ver_sala', sala_id = sala_id, admin = 'true'))
 
+
+
 # Rota da Sala Temporária
 @app.route('/sala/<sala_id>')
 def ver_sala(sala_id):
@@ -39,6 +49,8 @@ def ver_sala(sala_id):
     arquivos = os.listdir(app.config['UPLOAD_FOLDER'])
 
     return render_template('sala.html', sala_id = sala_id, is_admin = is_admin, arquivos = arquivos)
+
+
 
 # Rota de upload do arquivo
 @app.route('/sala/<sala_id>/upload', methods = ['POST'])
@@ -64,6 +76,20 @@ def upload_arquivo(sala_id):
     flash('Arquivo enviado com sucesso!')
     return redirect(url_for('ver_sala', sala_id = sala_id, admin = 'true'))
     
+
+
+# Downloads
+@app.route('/sala/<sala_id>/download/<filename>')
+def download_arquivo(sala_id, filename):
+    # Caminho específico da pasta da sala
+    caminho_sala = app.config['UPLOAD_FOLDER']
+
+    try:
+        return send_from_directory(caminho_sala, filename, as_attachment=True)
+    except FileNotFoundError:
+        abort(404, description='Arquivo não encontrado!')
+
+
 
 if __name__ == '__main__':
     # Roda a aplicação em modo de desenvolvedor na porta 5000
