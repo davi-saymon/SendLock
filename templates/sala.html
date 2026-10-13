@@ -77,8 +77,14 @@
                         // Quando o upload terminar...
                         xhr.addEventListener('load', function() {
                             if (xhr.status === 200) {
+                                // Mostra o toast
+                                mostrarToast('Upload concluído com sucesso!');
+
                                 // Recarrega a página para mostrar o arquivo na lista
-                                window.location.reload();
+                                setTimeout(() => {
+                                    window.location.reload();
+                                }, 4000);
+                                
                             } else {
                                 alert('Erro ao enviar o arquivo.')
                             }
@@ -129,6 +135,7 @@
                 });
 
             </script>
+
             {% else %}
             <p><em>Apenas o Administrador pode enviar arquivos nesta sala.</em></p>
             {% endif %}
@@ -143,24 +150,24 @@
                             <li>
                                 <!-- Nome do arquivo -->
                                  <div class="nome-arquivo">
-                                    <i class="fas fa-file-alt"></i>
+                                    <i class="{{ obter_icone_arquivo(item) }}"></i>
                                     <span>{{ item }}</span>
                                  </div>
 
                                 
                                 <div class="acoes-bt-de">
                                     <!-- Botão de download -->
-                                    <a href="{{ url_for('download_arquivo', sala_id=sala_id, filename=item) }}" class="bt-download" title="Baixar arquivo">
+                                    <a href="{{ url_for('download_arquivo', sala_id=sala_id, filename=item) }}" class="bt-download" title="Baixar arquivo" data-url="{{ url_for('download_arquivo', sala_id=sala_id, filename=item) }}" onclick="baixarArquivoComNotificacao(this)">
                                         <i class="fas fa-download"></i>
                                     </a>
 
                                     <!-- Botão de excluir -->
                                     {% if is_admin %}
-                                    <form action="{{ url_for('deletar_arquivo', sala_id=sala_id, filename=item) }}" class="bt-antapagar" method="POST" onsubmit="return confirm('Tem certeza que deseja apagar o arquivo?');">
-                                        <button type="submit" class="bt-apagar" title="Excluir arquivo">
+                                    <div class="div-bt-excluir">
+                                        <button type="button" class="bt-apagar" title="Excluir arquivo" data-url="{{ url_for('deletar_arquivo', sala_id=sala_id, filename=item) }}" onclick="abrirModalExclusao(this)">
                                             <i class="fas fa-trash-alt"></i>
                                         </button>
-                                    </form>
+                                    </div>
                                     {% endif %}
                                 </div>
                             </li>
@@ -172,5 +179,76 @@
              </div>
         </main>
     </div>
+
+    <!-- Modal de confirmação -->
+    <div id="modal-confirmacao" class="modal-sobreposto">
+        <div class="caixa-modal">
+            <h3>Excluir Arquivo</h3>
+            <p>Tem certeza que deseja apagar o arquivo?</p>
+            <div class="acoes-modal">
+                <button type="button" id="bt-cancelar" class="bt-modal-cancelar">Cancelar</button>
+                <form id="form-excluir-modal" method="POST" >
+                    <button type="submit" class="bt-modal-confirmar">Excluir</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Modal
+        const modal = document.getElementById('modal-confirmacao');
+        const formExcluir = document.getElementById('form-excluir-modal');
+        const btCancelar = document.getElementById('bt-cancelar');
+
+        function abrirModalExclusao(botao) {
+            const urlAcao = botao.getAttribute('data-url');
+            formExcluir.action = urlAcao; // Define a url correta
+            modal.style.display = 'flex'; // Mostra o modal
+        }
+
+        if (btCancelar) {
+            btCancelar.addEventListener('click', () => {
+                modal.style.display = 'none'; // Esconde o modal
+            });
+        }
+
+        // Fecha se clicar fora da ciaxa do modal
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    </script>
+
+    <!-- Toast (notificação) -->
+    <div id="toast-notificacao" class="toast-container">
+        <i class="fas fa-check-circle"></i>
+        <span id="toast-mensagem"></span>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <script>
+                window.addEventListener('DOMContentLoaded', () => {
+                    mostrarToast("{{ messages[0] }}");
+                });
+            </script>
+        {% endif %}
+    {% endwith %}
+
+    <script>
+        function mostrarToast(mensagem) {
+            const toast = document.getElementById('toast-notificacao')
+            const textoToast = document.getElementById('toast-mensagem');
+
+            textoToast.innerText = mensagem;
+            toast.classList.add('show');
+
+            // Esconde automaticamente depois de 3s
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    </script>
 </body>
 </html>
