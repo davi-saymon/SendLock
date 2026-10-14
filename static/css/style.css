@@ -117,6 +117,14 @@ body.dark-theme {
     border: none;
 }
 
+.cohost-badge {
+    background: linear-gradient(to right, #00a677, #00ffc8);
+    color: #f0f6fc;
+    border: none;
+    box-shadow: 0 0 5px #00ffc8;
+}
+
+
 .guest-badge {
     background: #1b2a44;
 }
