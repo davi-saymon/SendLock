@@ -117,6 +117,46 @@ body.dark-theme {
     border: none;
 }
 
+.guest-badge {
+    background: #1b2a44;
+}
+
+.bt-secundario {
+    margin: 2px;
+    padding: 6.5px 13px;
+    cursor: pointer;
+    background: transparent;
+    border: 1px solid #8041ee;
+    border-radius: 20px;
+    font-size: 1.06rem;
+    color: #f0f6fc;
+    font-weight: 600;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.bt-secundario:hover {
+    background: #8041ee;
+    box-shadow: 0 0 10px #8041ee;
+}
+
+.bt-secundario i {
+    color: #ffb241;
+}
+
+.div-pin {
+    margin: 20px 0;
+}
+
+.div-pin input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #193f5a;
+    background: #1d2335;
+    color: #f0f6fc;
+    font-size: 1.06rem;
+}
+
 /* Card Principal */
 .card {
     background-color: #1d2335;
@@ -189,7 +229,7 @@ body.dark-theme {
 .upload-box.drag-over {
     border-color: #00c0ff;
     box-shadow: 0 0 4px #00c0ff;
-    background-color: #171c2e;
+    background-color: #1b2a44;
 }
 
 .upload-box p {
@@ -437,6 +477,168 @@ div.container_arq_env {
 .div-bt-excluir {
     display: inline;
 }
+
+
+/* Modal PIN */
+.modal-sobreposto-pin {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #1d233534;
+    backdrop-filter: blur(4px);
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.acoes-modal-pin {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.caixa-modal-pin {
+    background: #1d2335;
+    border: 1px solid #8041ee;
+    border-radius: 8px;
+    padding: 30px;
+    width: 100%;
+    max-width: 400px;
+    color: #f0f6fc;
+    text-align: center;
+    box-shadow: 0 7px 10px #8041ee5d;
+}
+
+.caixa-modal-pin p {
+    color: #9dbee6;
+    margin-top: 5px;
+}
+
+/* Botões modal PIN */
+
+.bt-modal-cancelar-pin {
+    background: #181820;
+    border: 1px solid #193f5a;
+    color: #9dbee6;
+    cursor: pointer;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background 0.3s;
+}
+
+.bt-modal-cancelar-pin:hover {
+    background: #204d6d;
+}
+
+.bt-modal-confirmar-pin {
+    background: #181820;
+    border: 1px solid #4c278d;
+    color: #8041ee;
+    cursor: pointer;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.bt-modal-confirmar-pin:hover {
+    background: #8041ee;
+    color: #f0f6fc;
+    box-shadow: 0 0 7px #8041ee;
+}
+
+/* Modal PIN Admin */
+
+.modal-sobreposto-admin {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #1d233534;
+    backdrop-filter: blur(4px);
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.acoes-modal-admin {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.caixa-modal-admin {
+    background: #1d2335;
+    border: 1px solid #ffb241;
+    border-radius: 8px;
+    padding: 30px;
+    width: 100%;
+    font-size: 1.06rem;
+    max-width: 400px;
+    color: #f0f6fc;
+    text-align: center;
+    box-shadow: 0 7px 10px #ffb34164;
+}
+
+.texto-modal-admin {
+    color: #9dbee6;
+    margin-top: 15px;
+    font-size: 1.08rem;
+}
+
+.lista-pins {
+    margin: 20px 0;
+    text-align: left;
+    background: #181820;
+    padding: 15px;
+    font-size: 1.06rem;
+    border-radius: 6px;
+    border: 1px solid #193f5a;
+    box-shadow: 0 1px 7px #00bfff6a;
+}
+
+.bt-modal-confirmar-admin {
+    background: #181820;
+    border: 1px solid #193f5a;
+    color: #9dbee6;
+    cursor: pointer;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background 0.3s;
+}
+
+.bt-modal-confirmar-admin:hover {
+    background: #204d6d;
+}
+
+.bt-secundario-admin {
+    padding: 6.5px 13px;
+    cursor: pointer;
+    background: transparent;
+    border: 1px solid #ffb241;
+    border-radius: 20px;
+    font-size: 1.06rem;
+    font-weight: 501;
+    color: #f0f6fc;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+
+.bt-secundario-admin:hover {
+    background: #ffb241;
+    box-shadow: 0 0 10px #ffb241;
+}
+
 
 /* Notificação */
 

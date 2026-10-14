@@ -12,10 +12,27 @@
         <header class="header">
             <h1>🔒 SendLock</h1>
             <span class="badge">Sala: {{ sala_id }}</span>
-            {% if is_admin %}
+            {% if papel == 'admin' %}
                 <span class="badge admin-badge">👑 Administrador</span>
+
+                <!-- Botão para abrir modal de PINs ativos -->
+                 <button type="button" class="bt-secundario-admin" onclick="abrirModalPinsAdmin()">
+                    <i class="fas fa-key"></i> PINs Ativos
+                 </button>
+
+            {% elif papel == 'cohost' %}
+
+                <span class="badge cohost-badge">🛡 Coanfitrião</span>
+
             {% else %}
+
                 <span class="badge guest-badge">👤 Convidado</span>
+
+                <!-- Botão para abrir o modal -->
+                 <button type="button" class="bt-secundario" onclick="abirModalPin()">
+                    <i class="fas fa-key"></i> Inserir PIN
+                 </button>
+
             {% endif %}
         </header>
             
@@ -23,8 +40,6 @@
             <h2>Compartilhamento de Arquivos</h2>
             <p>Envie arquivos temporários sem necessidade de cadastro.</p>
 
-            {% if is_admin %}
-            
 
             <!-- Formulário de Upload -->
             <form id="uploadForm" action="{{ url_for('upload_arquivo', sala_id = sala_id) }}" method="POST" enctype="multipart/form-data">
@@ -135,10 +150,6 @@
                 });
 
             </script>
-
-            {% else %}
-            <p><em>Apenas o Administrador pode enviar arquivos nesta sala.</em></p>
-            {% endif %}
         </main>
         <main class="card-arquivos">
             <!-- Lista de Arquivos Enviados -->
@@ -161,8 +172,8 @@
                                         <i class="fas fa-download"></i>
                                     </a>
 
-                                    <!-- Botão de excluir -->
-                                    {% if is_admin %}
+                                    <!-- Botão de excluir (apenas Admin e CoHost) -->
+                                    {% if papel in ['admin', 'cohost'] %}
                                     <div class="div-bt-excluir">
                                         <button type="button" class="bt-apagar" title="Excluir arquivo" data-url="{{ url_for('deletar_arquivo', sala_id=sala_id, filename=item) }}" onclick="abrirModalExclusao(this)">
                                             <i class="fas fa-trash-alt"></i>
@@ -190,6 +201,41 @@
                 <form id="form-excluir-modal" method="POST" >
                     <button type="submit" class="bt-modal-confirmar">Excluir</button>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Inserir PIN -->
+    <div id="modal-pin" class="modal-sobreposto-pin">
+        <div class="caixa-modal-pin">
+            <h3>Autenticação por PIN</h3>
+            <p>Insira o PIN para ter mais opções de acesso:</p>
+
+            <form action="{{ url_for('login_sala', sala_id = sala_id) }}" method="POST">
+                <div class="div-pin">
+                    <input type="password" name="pin" placeholder="Digite o PIN...">
+                </div>
+                <div class="acoes-modal-pin">
+                    <button type="button" id="bt-cancelar-pin" class="bt-modal-cancelar-pin">Cancelar</button>
+                    <button type="submit" class="bt-modal-confirmar-pin">Entrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de PINs Ativos (Admin) -->
+    <div id="modal-pins-admin" class="modal-sobreposto-admin">
+        <div class="caixa-modal-admin">
+            <h3>Chaves de Acesso da Sala</h3>
+            <p class="texto-modal-admin">Estes são os PINs secretos desta sala! Compartilhe apenas com quem confia:</p>
+
+            <div class="lista-pins">
+                <p class="lista-pin-admin"><strong>👑 PIN Administrador:</strong> <code>{{ pin_admin }}</code></p>
+                <p class="lista-pin-cohost"><strong>🛡 PIN Coanfitrião:</strong> <code>{{ pin_cohost }}</code></p>
+            </div>
+
+            <div class="acoes-modal-admin">
+                <button type="button" id="bt-fechar-pins" class="bt-modal-confirmar-admin">Fechar</button>
             </div>
         </div>
     </div>
@@ -249,6 +295,56 @@
                 toast.classList.remove('show');
             }, 3000);
         }
+    </script>
+
+    <script>
+        // Modal de PIN
+        const modalPin = document.getElementById('modal-pin');
+        const btCancelarPin = document.getElementById('bt-cancelar-pin');
+
+        function abirModalPin() {
+            if (modalPin) {
+                modalPin.style.display = 'flex';
+            }
+        }
+
+        if (btCancelarPin) {
+            btCancelarPin.addEventListener('click', () => {
+                modalPin.style.display = 'none';
+            });
+        }
+
+        // Fecha se clicar fora da caixa
+        window.addEventListener('click', (e) => {
+            if (e.target === modalPin) {
+                modalPin.style.display = 'none';
+            }
+        });
+    </script>
+
+    <script>
+        // Modal de PINs do Admin
+        const modalPinsAdmin = document.getElementById('modal-pins-admin');
+        const btFecharPins = document.getElementById('bt-fechar-pins');
+
+        function abrirModalPinsAdmin() {
+            if (modalPinsAdmin) {
+                modalPinsAdmin.style.display = 'flex';
+            }
+        }
+
+        if (btFecharPins) {
+            btFecharPins.addEventListener('click', () => {
+                modalPinsAdmin.style.display = 'none';
+            });
+        }
+
+        // Fecha se clicar fora da caixa
+        window.addEventListener('click', (e) => {
+            if (e.target === modalPinsAdmin) {
+                modalPinsAdmin.style.display = 'none';
+            }
+        });
     </script>
 </body>
 </html>
