@@ -621,6 +621,16 @@ div.container_arq_env {
     margin-bottom: 5px;
 }
 
+.lista-pin-admin code, .lista-pin-cohost {
+    cursor: pointer;
+}
+
+.fa-copy {
+    font-size: 1rem;
+    margin-left: 8px;
+    color: #9dbee6;
+}
+
 .bt-modal-confirmar-admin {
     background: #181820;
     border: 1px solid #193f5a;
@@ -688,7 +698,6 @@ div.container_arq_env {
     color: #00ffc8;
     font-size: 1.2rem;
 }
-
 
 /* Botão Sair Deslizante */
 

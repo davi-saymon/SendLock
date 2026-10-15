@@ -83,10 +83,6 @@ def criar_sala():
 @app.route('/sala/<sala_id>')
 def ver_sala(sala_id):
 
-    print(f"[VER_SALA] Acedendo à sala: {sala_id}")
-    print(f"[VER_SALA] Salas ativas no DB: {list(salas_db.keys())}")
-    print(f"[VER_SALA] Papel atual na sessão: {session.get(f'papel_{sala_id}')}")
-
     # Se não existir, criar uma sala por segurança
     if sala_id not in salas_db:
         flash('Esta sala expirou ou não existe.', 'erro')
@@ -97,15 +93,15 @@ def ver_sala(sala_id):
 
 
     # Se a URL vier com ?admin=true, guarda na sessão
-    if request.args.get('admin') == 'true':
-        papel = 'admin'
-        session[f'papel_{sala_id}'] = 'admin'
+    if request.args.get('reset') == 'true':
+        papel = 'convidado'
+        session.pop[f'papel_{sala_id}'] = 'convidado'
 
 
     # Listar os arquivos armazenados na pasta e uploads
     arquivos = os.listdir(app.config['UPLOAD_FOLDER'])
-
     sala_atual = salas_db[sala_id]
+
     return render_template(
         'sala.html', 
         sala_id = sala_id,
@@ -149,13 +145,13 @@ def login_sala(sala_id):
 def upload_arquivo(sala_id):
     if 'arquivo' not in request.files:
         flash('Nenhum arquivo enviado.')
-        return redirect(url_for('ver_sala', sala_id = sala_id, admin = 'true'))
+        return redirect(url_for('ver_sala', sala_id = sala_id))
 
     arquivos = request.files.getlist('arquivo')
 
     if not arquivos or arquivos[0].filename == '':
         flash('Nenhum arquivo selecionado.')
-        return redirect(url_for('ver_sala', sala_id = sala_id, admin = 'true'))
+        return redirect(url_for('ver_sala', sala_id = sala_id))
 
     for arquivo in arquivos:
         if arquivo:
@@ -165,7 +161,7 @@ def upload_arquivo(sala_id):
             arquivo.save(caminho_salvar)
 
     flash('Arquivo enviado com sucesso!', 'sucesso')
-    return redirect(url_for('ver_sala', sala_id = sala_id, admin = 'true'))
+    return redirect(url_for('ver_sala', sala_id = sala_id))
     
 
 

@@ -118,7 +118,7 @@
                                 // Recarrega a página para mostrar o arquivo na lista
                                 setTimeout(() => {
                                     window.location.reload();
-                                }, 4000);
+                                }, 2000);
                                 
                             } else {
                                 alert('Erro ao enviar o arquivo.')
@@ -250,8 +250,19 @@
             <p class="texto-modal-admin">Estes são os PINs secretos desta sala! Compartilhe apenas com quem confia:</p>
 
             <div class="lista-pins">
-                <p class="lista-pin-admin"><strong>👑 PIN Administrador:</strong> <code>{{ pin_admin }}</code></p>
-                <p class="lista-pin-cohost"><strong>🛡 PIN Coanfitrião:</strong> <code>{{ pin_cohost }}</code></p>
+                <p class="lista-pin-admin">
+                    <strong>👑 PIN Administrador:</strong> 
+                    <code onclick="copiarTexto('{{ pin_admin }}', 'PIN de Administrador copiado!')" title="Clique para copiar">
+                        {{ pin_admin }} <i class="fas fa-copy"></i>
+                    </code>
+                </p>
+
+                <p class="lista-pin-cohost">
+                    <strong>🛡 PIN Coanfitrião:</strong> 
+                    <code onclick="copiarTexto('{{ pin_cohost }}', 'PIN de Coanfitrião copiado!')" title="Clique para copiar">
+                        {{ pin_cohost }} <i class="fas fa-copy"></i>
+                    </code>
+                </p>
             </div>
 
             <div class="acoes-modal-admin">
@@ -292,22 +303,26 @@
         <span id="toast-mensagem"></span>
     </div>
 
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <script>
-                window.addEventListener('DOMContentLoaded', () => {
-                    mostrarToast("{{ messages[0] }}");
-                });
-            </script>
-        {% endif %}
-    {% endwith %}
-
     <script>
-        function mostrarToast(mensagem) {
+        function mostrarToast(mensagem, tipo = 'sucesso') {
             const toast = document.getElementById('toast-notificacao')
             const textoToast = document.getElementById('toast-mensagem');
+            const icone = toast.querySelector('i');
 
             textoToast.innerText = mensagem;
+
+            // Altera o ícone e a cor
+            if (tipo === 'erro') {
+                icone.className = 'fas fa-exclamation-circle';
+                icone.style.color = '#ff0000';
+                icone.style.boxShadow = '0 0 7px #ff0000';
+                icone.style.borderRadius = '20px';
+
+            } else {
+                icone.className = 'fas fa-check-circle';
+                toast.style.borderColor = '';
+            }
+
             toast.classList.add('show');
 
             // Esconde automaticamente depois de 3s
@@ -316,6 +331,20 @@
             }, 3000);
         }
     </script>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <script>
+                window.addEventListener('DOMContentLoaded', () => {
+                    // messages é uma tupla: (categoria, mensagem)
+                    const categoria = '{{ messages[0][0] }}';
+                    const mensagem = '{{ messages [0][1] }}';
+                    mostrarToast(mensagem, categoria);
+                });
+            </script>
+        {% endif %}
+    {% endwith %}
+
 
     <script>
         // Modal de PIN
@@ -340,6 +369,17 @@
                 modalPin.style.display = 'none';
             }
         });
+
+        // Copiar PIN
+        function copiarTexto(texto, mensagemSucesso) {
+            navigator.clipboard.writeText(texto).then(() => {
+                mostrarToast(mensagemSucesso, 'sucesso');
+            }).catch(err => {
+                console.error('Erro ao copiar: ', err);
+            });
+        }
+
+
     </script>
 
     <script>
