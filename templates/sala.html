@@ -12,18 +12,38 @@
         <header class="header">
             <h1>🔒 SendLock</h1>
             <span class="badge">Sala: {{ sala_id }}</span>
-            {% if papel == 'admin' %}
-                <span class="badge admin-badge">👑 Administrador</span>
 
-                <!-- Botão para abrir modal de PINs ativos -->
-                 <button type="button" class="bt-secundario-admin" onclick="abrirModalPinsAdmin()">
-                    <i class="fas fa-key"></i> PINs Ativos
-                 </button>
+            {% if papel == 'admin' %}
+
+            <!-- Menu Deslizante Admin-->
+                <div class="menu-container" onclick="toggleMenu('admin')">
+                    <span class="badge admin-badge">
+                        👑 Administrador <i class="fas fa-chevron-right" id="seta-admin"></i>
+                    </span>
+                    <a href="{{ url_for('sair_sessao', sala_id = sala_id) }}" id="bt-sair-admin" class="bt-sair-deslizante"  onclick="event.stopPropagation();">
+                        <i class="fas fa-sing-out-alt"></i> Sair
+                    </a>
+                </div>
+
+                    <!-- Botão para abrir modal de PINs ativos -->
+                    <button type="button" class="bt-secundario-admin" onclick="abrirModalPinsAdmin()">
+                        <i class="fas fa-key"></i> PINs Ativos
+                    </button>
+                
 
             {% elif papel == 'cohost' %}
-
-                <span class="badge cohost-badge">🛡 Coanfitrião</span>
-
+            
+            <!-- Menu Deslizante CoHost -->
+            <div class="menu-container" onclick="toggleMenu('cohost')">
+                <span class="badge cohost-badge">
+                    🛡 Coanfitrião <i class="fas fa-chevron-right" id="seta-cohost"></i>
+                </span>
+            
+                <a href="{{ url_for('sair_sessao', sala_id = sala_id) }}" id="bt-sair-cohost" class="bt-sair-deslizante" onclick="event.stopPropagation();">
+                    <i class="fas fa-sing-out-alt"></i> Sair
+                </a>
+            </div>
+            
             {% else %}
 
                 <span class="badge guest-badge">👤 Convidado</span>
@@ -344,6 +364,39 @@
             if (e.target === modalPinsAdmin) {
                 modalPinsAdmin.style.display = 'none';
             }
+        });
+    </script>
+
+    <script>
+        // Botão Sair Deslizante
+        function toggleMenu(tipo) {
+            const btSair = document.getElementById('bt-sair-' + tipo);
+            const container = btSair.closest('.menu-container');
+            const seta = container.querySelector('.fa-chevron-right');
+
+            if (btSair) {
+                btSair.classList.toggle('ativo');
+
+                if (seta) {
+                    seta.style.transform = btSair.classList.contains('ativo') ? 'rotate(180deg)' : 'rotate(0deg)';
+                }
+            }
+        }
+
+
+        // Fecha o menu se clicar fora
+        window.addEventListener('click', (e) => {
+            document.querySelectorAll('.menu-container').forEach(container => {
+                if (!container.contains(e.target)) {
+                    const btSair = container.querySelector('.bt-sair-deslizante');
+                    const seta = container.querySelector('.fa-chevron-right');
+
+                    if (btSair && btSair.classList.contains('ativo')) {
+                        btSair.classList.remove('ativo');
+                        if (seta) seta.style.transform = 'rotate(0deg)';
+                    }
+                }
+            });
         });
     </script>
 </body>

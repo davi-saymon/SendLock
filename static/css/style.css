@@ -115,6 +115,8 @@ body.dark-theme {
     background: linear-gradient(to right, #e95d24, #ffb241);
     color: #ffffff;
     border: none;
+    position: relative;
+    z-index: 2;
 }
 
 .cohost-badge {
@@ -122,6 +124,8 @@ body.dark-theme {
     color: #f0f6fc;
     border: none;
     box-shadow: 0 0 5px #00ffc8;
+    position: relative;
+    z-index: 2;
 }
 
 
@@ -613,6 +617,10 @@ div.container_arq_env {
     box-shadow: 0 1px 7px #00bfff6a;
 }
 
+.lista-pin-admin {
+    margin-bottom: 5px;
+}
+
 .bt-modal-confirmar-admin {
     background: #181820;
     border: 1px solid #193f5a;
@@ -679,4 +687,66 @@ div.container_arq_env {
 .toast-container i {
     color: #00ffc8;
     font-size: 1.2rem;
+}
+
+
+/* Botão Sair Deslizante */
+
+
+/* Container Geral */
+.menu-container {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    margin: 0 5px;
+    cursor: pointer;
+    user-select: none;
+}
+
+/* Setinha */
+.fa-chevron-right {
+    font-size: 13px;
+    margin-left: 7px;
+    transition: transform 0.3s ease;
+}
+
+/* Botão deslizante */
+.bt-sair-deslizante {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    background-color: #181820;
+    color: #ff0000;
+    border: 1px solid #ff0000;
+    border-radius: 0 7px 7px 0; /* Arredonda apenas a ponta direita */
+    padding: 7px 14px 6px 18px;
+    font-size: 1rem;
+    text-decoration: none;
+    font-weight: 501;
+
+    /* Posição para ficar a deslizar a partir de trás do crachá */
+    position: relative;
+    z-index: 1;
+    margin-left: -30px; /* Recua para ficar ligeiramente por baixo do canto direito do crachá */
+
+    /* Estado inicial */
+    max-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Estado ativo (quando abre a animação) */
+.bt-sair-deslizante.ativo {
+    max-width: 100px;
+    opacity: 1;
+    margin-left: -15px;
+}
+
+.bt-sair-deslizante:hover {
+    background-color: #ff0000;
+    color: #f0f6fc;
+    box-shadow: 0 0 7px #ff0000;
 }

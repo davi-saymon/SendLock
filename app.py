@@ -213,6 +213,15 @@ def deletar_arquivo(sala_id, filename):
     return redirect(url_for('ver_sala', sala_id = sala_id))
 
 
+# Rota para sair da sessão (Voltar como Convidado)
+@app.route('/sala/<sala_id>/sair')
+def sair_sessao(sala_id):
+
+    # Remover o papel da sessão, se existir
+    session.pop(f'papel_{sala_id}', None)
+    flash('Sessão encerrada.', 'sucesso')
+    return redirect(url_for('ver_sala', sala_id = sala_id))
+
 
 if __name__ == '__main__':
     # Roda a aplicação em modo de desenvolvedor na porta 5000
