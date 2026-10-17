@@ -211,6 +211,21 @@
         </main>
     </div>
     
+    <!-- Configuração de Expiração -->
+{% if papel == 'admin' %}
+<div class="menu-expiracao-topo">
+    <form action="/sala/{{ sala_id }}/definir-expiracao" method="POST" class="form-expiracao">
+        <label for="duracao" class="label-expiracao">⏳ Expiração:</label>
+        <select name="duracao" id="duracao" onchange="this.form.submit()" class="select-expiracao">
+            <option value="1d" {% if expiracao_atual == '1d' %}selected{% endif %}>1 Dia</option>
+            <option value="1s" {% if expiracao_atual == '1s' %}selected{% endif %}>1 Semana</option>
+            <option value="1m" {% if expiracao_atual == '1m' %}selected{% endif %}>1 Mês</option>
+        </select>
+    </form>
+</div>
+{% endif %}
+
+
     <!-- Modal de confirmação -->
     <div id="modal-confirmacao" class="modal-sobreposto">
         <div class="caixa-modal">

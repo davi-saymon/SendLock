@@ -686,21 +686,59 @@ div.container_arq_env {
     align-items: center;
     gap: 12px;
     z-index: 1100;
+
     opacity: 0;
     visibility: hidden;
     transform: translateY(20px);
-    transition: opacity 0.3s ease, trasnform 0.5s ease, visibility 0.3s ease;
+
+    transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                trasnform 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                visibility 0.4s ease;
+    will-change: transform, opacity;
 }
 
 .toast-container.show {
     opacity: 1;
     visibility: visible;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
 }
 
 .toast-container i {
     color: #00ffc8;
     font-size: 1.2rem;
+}
+
+.mensagens-flash {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.alerta {
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 1rem;
+    text-align: center;
+    font-weight: 500;
+
+    opacity: 0;
+    transition: opacity 0.7s ease;
+}
+
+.alerta.visivel {
+    opacity: 1;
+}
+
+.alerta-erro {
+    background-color: #1d2335;
+    border: 1px solid #ffb241;
+    color: #f0f6fc;
+}
+
+.alerta-sucesso {
+    background-color: #1d2335;
+    border: 1px solid #00ffc8;
 }
 
 /* Botão Sair Deslizante */
@@ -835,4 +873,45 @@ div.container_arq_env {
 
 .bt-excluir-sala:hover {
     background: rgba(255, 85, 85, 0.1);
+}
+
+/* Expiração */
+
+.menu-expiracao-topo {
+    position: absolute;
+    top: 50px;
+    right: 50px;
+    z-index: 100;
+}
+
+.form-expiracao {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #111522;
+    border: 1px solid #193f5a;
+    padding: 6px 12px;
+    border-radius: 8px;
+}
+
+.label-expiracao {
+    color: #9dbee6;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.select-expiracao {
+    background-color: #1d2335;
+    color: #f0f6fc;
+    border: 1px solid #193f5a;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    outline: none;
+    transition: background-color 0.3s ease;
+}
+
+.select-expiracao:hover {
+    background-color: #1b2a44;
 }

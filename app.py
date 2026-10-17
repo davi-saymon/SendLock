@@ -3,6 +3,7 @@ import uuid
 import secrets
 import string
 import shutil
+import time
 from flask import Flask, render_template, redirect, url_for, request, flash, send_from_directory, abort, session, make_response
 from werkzeug.utils import secure_filename
 
@@ -23,6 +24,13 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
+
+# Tabela de tempos em segundos
+TEMPOS_EXPIRACAO = {
+    '1d': 24 * 60 * 60,        # 1 Dia (86400s)
+    '1s': 7 * 24 * 60 * 60,     # 1 Semana (604800s)
+    '1m': 30 * 24 * 60 * 60     # 1 Mês (2592000s)
+}
 
 
 def obter_icone_arquivo(filename):
@@ -68,7 +76,9 @@ def criar_sala():
     # Salva os dados
     salas_db[sala_id] = {
         'pin_admin': pin_admin,
-        'pin_cohost': pin_cohost
+        'pin_cohost': pin_cohost,
+        'criado_em': time.time(),
+        'expiracao_chave': '1d' # Padrão: 1 Dia
     }
 
     # Passa os PINs para o usuário ver
@@ -84,6 +94,25 @@ def ver_sala(sala_id):
     if sala_id not in salas_db:
         flash('Esta sala expirou ou não existe.', 'erro')
         return redirect(url_for('inicio'))
+
+
+    sala_atual = salas_db[sala_id]
+
+    # Pega o limite em segundos com base ana chave escolhida (1d, 1s ou 1m)
+    chave_expiracao = sala_atual.get('expiracao_chave', '1d')
+    limite_segundos = TEMPOS_EXPIRACAO.get(chave_expiracao, 86400)
+
+    # Verifica se a sala expirou
+    if time.time() - sala_atual.get('criado_em', time.time()) > limite_segundos:
+        pasta_sala = os.path.join(app.config['UPLOAD_FOLDER'], sala_id)
+
+        if os.path.exists(pasta_sala):
+            shutil.rmtree(pasta_sala)
+        del salas_db[sala_id]
+
+        flash('Esta sala expirou e foi removida por segurança.', 'erro')
+        return redirect(url_for('inicio', remover_id = sala_id))
+
 
     # Se veio do botão de criar sala, define o papel de admin
     if request.args.get('criador') == 'true':
@@ -114,8 +143,8 @@ def ver_sala(sala_id):
         papel = papel,
         arquivos = arquivos, 
         pin_admin = sala_atual['pin_admin'],
-        pin_cohost = sala_atual['pin_cohost'] 
-        
+        pin_cohost = sala_atual['pin_cohost'],
+        expiracao_atual = chave_expiracao
     )
 
 
@@ -236,6 +265,25 @@ def excluir_pasta_sala(sala_id):
         del salas_db[sala_id]
 
     return '', 204 # Retorna sucesso vazio para o JavaScript
+
+# Rota de expiração
+@app.route('/sala/<sala_id>/definir-expiracao', methods=['POST'])
+def definir_expiracao(sala_id):
+    papel = session.get(f'papel_{sala_id}', 'convidado')
+
+    # Apenas o Admin pode alterar
+    if papel != 'admin':
+        flash('Apenas administradores podem alterar a expiração.', 'erro')
+        return redirect(url_for('ver_sala', sala_id = sala_id))
+
+    nova_opcao = request.form.get('duracao')
+    if nova_opcao in TEMPOS_EXPIRACAO:
+        if sala_id in salas_db:
+            salas_db[sala_id]['expiracao_chave'] = nova_opcao
+            flash(f'Tempo de expiração atualizado', 'sucesso')
+
+    return redirect(url_for('ver_sala', sala_id = sala_id))
+
 
 if __name__ == '__main__':
     # Roda a aplicação em modo de desenvolvedor na porta 5000

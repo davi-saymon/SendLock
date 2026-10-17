@@ -25,8 +25,34 @@
         <div id="lista-salas-recentes" class="div-recentes"></div>
     </div>
 
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="mensagens-flash">
+                {% for category, message in messages %}
+                    <div class="alerta alerta-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+
     <script>
-        // Remover uma sala específica do hitórico
+        // 1. Verifica se o Flask enviou um pedido para remover uma sala expirada
+        const urlParams = new URLSearchParams(window.location.search);
+        const idParaRemover = urlParams.get('remover_id');
+
+        if (idParaRemover) {
+            let recentes = JSON.parse(localStorage.getItem('sendlock-recentes') || '[]');
+            recentes = recentes.filter(id => id !== idParaRemover);
+            localStorage.setItem('sendlock-recentes', JSON.stringify(recentes));
+
+            // Lipa o parâmetro da URL sem recarregar a págian do zero
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+
+
+        // 2. Remover uma sala específica do hitórico
         function removerSalaRecente(event, idParaRemover) {
             event.preventDefault();
             event.stopPropagation();
@@ -52,7 +78,8 @@
 
         }
 
-        // Renderiza as salas recentes
+        
+        // 3. Renderiza as salas recentes
         const recentes = JSON.parse(localStorage.getItem('sendlock-recentes') || '[]');
 
         if (recentes.length > 0) {
@@ -85,6 +112,24 @@
                 lista.appendChild(wrapper);
             });
         }
+    
+        // Animação de entrada e saída
+        document.addEventListener('DOMContentLoaded', () => {
+            const mensagens = document.querySelectorAll('.alerta');
+
+            mensagens.forEach(msg => {
+                setTimeout(() => {
+                    msg.classList.add('visivel');
+                }, 50);
+            
+                // 4. Faz a mensagem flash desaparecer após 4 segundos
+                setTimeout(() => {
+                    msg.style.transition = 'opacity 0.7s ease';
+                    msg.style.opacity = '0';
+                    setTimeout(() => msg.remove(), 800);
+                }, 3000);
+            });
+        });
     </script>
 </body>
 </html>
