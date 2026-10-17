@@ -439,5 +439,25 @@
             });
         });
     </script>
+
+    <script>
+        // Salas Recentes
+        const salaId = '{{ sala_id }}';
+        let salasRecentes = JSON.parse(localStorage.getItem('sendlock_recentes') || '[]');
+
+        // Só adiciona se o ID ainda não estiver na lista de recentes
+        salasRecentes = salasRecentes.filter(id => id !== salaId);
+        
+        salasRecentes.unshift(salaId);
+
+        // Mantém apenas as últimas 5 salas
+        if (salasRecentes.length > 5) {
+            salasRecentes.pop();
+        }
+
+        localStorage.setItem('sendlock-recentes', JSON.stringify(salasRecentes));
+        console.log('Salas recentes atualizadas:', salasRecentes);
+    
+    </script>
 </body>
 </html>

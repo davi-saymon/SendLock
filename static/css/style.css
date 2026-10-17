@@ -15,11 +15,15 @@ body.tema-escuro-inicio {
     align-items: center;
     display: flex;
     justify-content: center;
+    flex-direction: column;
 }
 
 .container-inicio {
     width: 100%;
     max-width: 600px;
+    flex-direction: column;
+    display: flex;
+    align-items: center;
 }
 
 main.inicio {
@@ -758,4 +762,49 @@ div.container_arq_env {
     background-color: #ff0000;
     color: #f0f6fc;
     box-shadow: 0 0 7px #ff0000;
+}
+
+/* Salas Recentes */
+
+.container-recentes {
+    display: none;
+    gap: 10px;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    background-color: #1d2335;
+    border: 1px solid #193f5a;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 30px;
+    width: 100%;
+    max-width: 541px;
+}
+
+.container-recentes p {
+    color: #f0f6fc;
+    font-size: 1rem;
+    
+
+}
+
+.div-recentes {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+}
+
+.sala-recente-bt {
+    background: #111522;
+    border: 1px solid #00c0ff;
+    color: #9dbee6;
+    padding: 8px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: background 0.3s ease;
+}
+
+.sala-recente-bt:hover {
+    background: #1b2a44;
 }

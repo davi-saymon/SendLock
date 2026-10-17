@@ -18,5 +18,31 @@
             </form>
         </main>
     </div>
+
+    <!-- Salas Recentes -->
+    <div id="secao-recentes" class="container-recentes">
+        <p>Salas Recentes</p>
+        <div id="lista-salas-recentes" class="div-recentes"></div>
+    </div>
+
+    <script>
+        const recentes = JSON.parse(localStorage.getItem('sendlock-recentes') || '[]');
+
+        if (recentes.length > 0) {
+            const secao = document.getElementById('secao-recentes');
+            const lista = document.getElementById('lista-salas-recentes');
+            secao.style.display = 'flex';
+
+            recentes.forEach(id => {
+                const link = document.createElement('a');
+                link.href = `/sala/${id}`;
+                link.textContent = `Sala: ${id}`;
+
+                link.className = 'sala-recente-bt'
+
+                lista.appendChild(link);
+            });
+        }
+    </script>
 </body>
 </html>
