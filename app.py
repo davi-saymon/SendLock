@@ -69,13 +69,8 @@ def criar_sala():
         'pin_cohost': pin_cohost
     }
 
-    # Guarda quem é o admin
-    session[f'papel_{sala_id}'] = 'admin'
-
-    print(f"[CRIAR] Sala criada: {sala_id} | Papel na sessão definido como {session.get(f'papel_{sala_id}')}")
-
     # Passa os PINs para o usuário ver
-    return redirect(url_for('ver_sala', sala_id = sala_id))
+    return redirect(url_for('ver_sala', sala_id = sala_id, criador = 'true'))
 
 
 
@@ -88,14 +83,16 @@ def ver_sala(sala_id):
         flash('Esta sala expirou ou não existe.', 'erro')
         return redirect(url_for('inicio'))
 
+    # Se veio do botão de criar sala, define o papel de admin
+    if request.args.get('criador') == 'true':
+            session[f'papel_{sala_id}'] = 'admin'
+            
+            # Redireciona para a mesma sala mas sem o '?criador=true' na URL,
+            # limpando a barra de endereços para que o link partilhado fique limpo.
+            return redirect(url_for('ver_sala', sala_id=sala_id))
+
     # Recupera o papel atual do utilizador (padrão: 'convidado')
     papel = session.get(f'papel_{sala_id}', 'convidado')
-
-
-    # Se a URL vier com ?admin=true, guarda na sessão
-    if request.args.get('reset') == 'true':
-        papel = 'convidado'
-        session.pop[f'papel_{sala_id}'] = 'convidado'
 
 
     # Listar os arquivos armazenados na pasta e uploads
