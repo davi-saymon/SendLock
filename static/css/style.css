@@ -778,33 +778,61 @@ div.container_arq_env {
     padding: 20px;
     margin-top: 30px;
     width: 100%;
-    max-width: 541px;
+    max-width: 900px;
 }
 
 .container-recentes p {
     color: #f0f6fc;
-    font-size: 1rem;
+    font-size: 1.1rem;
     
 
 }
 
 .div-recentes {
     display: flex;
-    justify-content: center;
     flex-direction: row;
+    gap: 8px;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
 }
 
-.sala-recente-bt {
+.bt-sala-recente {
     background: #111522;
     border: 1px solid #00c0ff;
     color: #9dbee6;
-    padding: 8px 14px;
+    padding: 8px 10px;
     border-radius: 6px;
     text-decoration: none;
-    font-size: 0.85rem;
+    font-size: 1rem;
+    transition: background 0.3s ease;
+    /* flex: 1; */
+}
+
+.bt-sala-recente:hover {
+    background: #1b2a44;
+}
+
+/* Botão de excluir sala recente */
+
+.sala-recente-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 8px;
+}
+
+.bt-excluir-sala {
+    background: transparent;
+    border: none;
+    color: #ff0000;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
     transition: background 0.3s ease;
 }
 
-.sala-recente-bt:hover {
-    background: #1b2a44;
+.bt-excluir-sala:hover {
+    background: rgba(255, 85, 85, 0.1);
 }

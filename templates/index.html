@@ -21,26 +21,68 @@
 
     <!-- Salas Recentes -->
     <div id="secao-recentes" class="container-recentes">
-        <p>Salas Recentes</p>
+        <p>Salas Recentes (últimas 5)</p>
         <div id="lista-salas-recentes" class="div-recentes"></div>
     </div>
 
     <script>
+        // Remover uma sala específica do hitórico
+        function removerSalaRecente(event, idParaRemover) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            // Envia um pedido para o Flask apagar a pasta física no servidor
+            fetch(`/sala/${idParaRemover}/excluir-pasta`, {
+                method: 'POST'
+            }).then(() =>{
+                let recentes = JSON.parse(localStorage.getItem('sendlock-recentes') || '[]');
+
+                // Filtra removendo o ID selecionado
+                recentes = recentes.filter(id => id !== idParaRemover);
+
+                // Atualiza o localStoreage
+                localStorage.setItem('sendlock-recentes', JSON.stringify(recentes));
+
+                // Recarrega a página para atualizar a lista visualmente
+                window.location.reload();
+            
+            }).catch(err => {
+                console.error('Erro ao apagar a pasta da sala:', err);
+            });
+
+        }
+
+        // Renderiza as salas recentes
         const recentes = JSON.parse(localStorage.getItem('sendlock-recentes') || '[]');
 
         if (recentes.length > 0) {
             const secao = document.getElementById('secao-recentes');
             const lista = document.getElementById('lista-salas-recentes');
-            secao.style.display = 'flex';
+
+            secao.style.display = 'flex'
+            lista.innerHTML = '';
 
             recentes.forEach(id => {
+                // Criar um container para alinhar o botão com o 'x'
+                const wrapper = document.createElement('div');
+                wrapper.className = 'sala-recente-wrapper';
+
                 const link = document.createElement('a');
                 link.href = `/sala/${id}`;
                 link.textContent = `Sala: ${id}`;
+                link.className = 'bt-sala-recente';
+                
+                const btExcluir = document.createElement('button');
+                btExcluir.innerHTML = '&times;'; // Símbolo de 'X'
+                btExcluir.className = 'bt-excluir-sala';
+                btExcluir.title = 'Apagar sala';
 
-                link.className = 'sala-recente-bt'
+                // Associa o evento de clique ao botão de exclusão
+                btExcluir.onclick = (e) => removerSalaRecente(e, id);
 
-                lista.appendChild(link);
+                wrapper.appendChild(link);
+                wrapper.appendChild(btExcluir);
+                lista.appendChild(wrapper);
             });
         }
     </script>

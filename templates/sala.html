@@ -210,7 +210,7 @@
              </div>
         </main>
     </div>
-
+    
     <!-- Modal de confirmação -->
     <div id="modal-confirmacao" class="modal-sobreposto">
         <div class="caixa-modal">
@@ -442,22 +442,26 @@
 
     <script>
         // Salas Recentes
-        const salaId = '{{ sala_id }}';
-        let salasRecentes = JSON.parse(localStorage.getItem('sendlock_recentes') || '[]');
+        const caminho = window.location.pathname.split('/');
+        const salaId = caminho[caminho.indexOf('sala') + 1];
 
-        // Só adiciona se o ID ainda não estiver na lista de recentes
-        salasRecentes = salasRecentes.filter(id => id !== salaId);
-        
-        salasRecentes.unshift(salaId);
+        if (salaId) {
 
-        // Mantém apenas as últimas 5 salas
-        if (salasRecentes.length > 5) {
-            salasRecentes.pop();
+            let salasRecentes = JSON.parse(localStorage.getItem('sendlock-recentes') || '[]');
+
+            // Só adiciona se o ID ainda não estiver na lista de recentes
+            salasRecentes = salasRecentes.filter(id => id !== salaId);
+            
+            salasRecentes.unshift(salaId);
+
+            // Mantém apenas as últimas 5 salas
+            if (salasRecentes.length > 5) {
+                salasRecentes.pop();
+            }
+
+            localStorage.setItem('sendlock-recentes', JSON.stringify(salasRecentes));
+
         }
-
-        localStorage.setItem('sendlock-recentes', JSON.stringify(salasRecentes));
-        console.log('Salas recentes atualizadas:', salasRecentes);
-    
     </script>
 </body>
 </html>

@@ -2,6 +2,7 @@ import os
 import uuid
 import secrets
 import string
+import shutil
 from flask import Flask, render_template, redirect, url_for, request, flash, send_from_directory, abort, session, make_response
 from werkzeug.utils import secure_filename
 
@@ -61,10 +62,11 @@ def criar_sala():
     pin_admin = ''.join(secrets.choice(string.digits) for _ in range(6))
     pin_cohost = secrets.token_hex(4)
 
+    pasta_sala = os.path.join(app.config['UPLOAD_FOLDER'], sala_id)
+    os.makedirs(pasta_sala, exist_ok=True)
 
     # Salva os dados
     salas_db[sala_id] = {
-        'arquivos': [],
         'pin_admin': pin_admin,
         'pin_cohost': pin_cohost
     }
@@ -98,6 +100,13 @@ def ver_sala(sala_id):
     # Listar os arquivos armazenados na pasta e uploads
     arquivos = os.listdir(app.config['UPLOAD_FOLDER'])
     sala_atual = salas_db[sala_id]
+
+    pasta_sala = os.path.join(UPLOAD_FOLDER, sala_id)
+
+    # Lista apenas os arquivos que pertencem à pasta desta sala específica
+    arquivos = []
+    if os.path.exists(pasta_sala):
+        arquivos = os.listdir(pasta_sala)
 
     return render_template(
         'sala.html', 
@@ -150,11 +159,17 @@ def upload_arquivo(sala_id):
         flash('Nenhum arquivo selecionado.')
         return redirect(url_for('ver_sala', sala_id = sala_id))
 
+    # Cria um caminho para a pasta específica
+    pasta_sala = os.path.join(app.config['UPLOAD_FOLDER'], sala_id)
+    os.makedirs(pasta_sala, exist_ok=True)
+
     for arquivo in arquivos:
         if arquivo:
             # Sanitiza (Detetiza kk) o nome do arquivo para segurança
             nome_seguro = secure_filename(arquivo.filename)
-            caminho_salvar = os.path.join(app.config['UPLOAD_FOLDER'], nome_seguro)
+
+            # Salva o arquivo DENTRO da pasta específica da sala
+            caminho_salvar = os.path.join(pasta_sala, nome_seguro)
             arquivo.save(caminho_salvar)
 
     flash('Arquivo enviado com sucesso!', 'sucesso')
@@ -165,21 +180,12 @@ def upload_arquivo(sala_id):
 # Downloads
 @app.route('/sala/<sala_id>/download/<filename>')
 def download_arquivo(sala_id, filename):
-    # Caminho específico da pasta da sala
-    caminho_sala = app.config['UPLOAD_FOLDER']
+    
+    # Subpasta específica da pasta da sala
+    pasta_sala = os.path.join(app.config['UPLOAD_FOLDER'], sala_id)
 
-    if os.path.exists(os.path.join(caminho_sala, filename)):
-        # Pega o token enviado, se houver
-#        token = request.args.get('token')
-
-        # Executa o envido
-        response = make_response(send_from_directory(caminho_sala, filename, as_attachment=True))
-
-        # Se tiver tokens, define o cookie para saber que terminou
-#        if token:
-#            response.set_cookie(f'fileDownloadToken_{token}', 'true', max_age=10)
-            
-        return send_from_directory(caminho_sala, filename, as_attachment=True)
+    if os.path.exists(os.path.join(pasta_sala, filename)):
+        return send_from_directory(pasta_sala, filename, as_attachment=True)
     else:
         abort(404, description='Arquivo não encontrado!')
 
@@ -196,8 +202,9 @@ def deletar_arquivo(sala_id, filename):
         flash('Acesso negado: apenas Admiistradores e Coanfitriões podem excluir arquivos.', 'erro')
         return redirect(url_for('ver_sala', sala_id = sala_id))
 
-    caminho_pasta = app.config['UPLOAD_FOLDER']
-    caminho_arquivo = os.path.join(caminho_pasta, filename)
+    # Aponta para a subpasta específica da sala
+    pasta_sala = os.path.join(app.config['UPLOAD_FOLDER'], sala_id)
+    caminho_arquivo = os.path.join(pasta_sala, filename)
 
     if os.path.exists(caminho_arquivo):
         os.remove(caminho_arquivo)
@@ -215,6 +222,20 @@ def sair_sessao(sala_id):
     flash('Sessão encerrada.', 'sucesso')
     return redirect(url_for('ver_sala', sala_id = sala_id))
 
+# Rota para apagar a sala e a sua pasta física
+@app.route('/sala/<sala_id>/excluir-pasta', methods=['POST'])
+def excluir_pasta_sala(sala_id):
+    pasta_sala = os.path.join(app.config['UPLOAD_FOLDER'], sala_id)
+
+    # Se a pasta física existir, é apagada junto com todos os arquivos
+    if os.path.exists(pasta_sala):
+        shutil.rmtree(pasta_sala)
+
+    # Remove também do dicionário em memória, se existir
+    if sala_id in salas_db:
+        del salas_db[sala_id]
+
+    return '', 204 # Retorna sucesso vazio para o JavaScript
 
 if __name__ == '__main__':
     # Roda a aplicação em modo de desenvolvedor na porta 5000
