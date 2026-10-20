@@ -200,7 +200,7 @@ body.dark-theme {
 
 /* Barra de Rolagem*/
 .card-arquivos::-webkit-scrollbar {
-    width: 4px;
+    width: 5px;
     
 }
 
@@ -217,6 +217,14 @@ body.dark-theme {
 
 .card-arquivos::-webkit-scrollbar-thumb:hover {
     background: #204d6d;
+}
+
+/* Para Firefox */
+@supports (-moz-appearance: none) {
+    .card-arquivos {
+        scrollbar-width: thin;
+        scrollbar-color: #193f5a transparent;
+    }
 }
 
 /* Detalhes Card Principal*/
@@ -625,7 +633,7 @@ div.container_arq_env {
     margin-bottom: 5px;
 }
 
-.lista-pin-admin code, .lista-pin-cohost {
+.lista-pin-admin i, .lista-pin-cohost i {
     cursor: pointer;
 }
 
@@ -880,23 +888,78 @@ div.container_arq_env {
 .menu-expiracao-topo {
     position: absolute;
     top: 50px;
-    right: 50px;
+    right: 25px;
     z-index: 100;
+    display: flex;
+    align-items: center;
+    flex-direction: row-reverse;
+    gap: 8px;
+}
+
+/* Botão Redondo (Balãozinho com Relógio) */
+.bt-balao-expiracao {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    min-height: 42px;
+    border-radius: 50%;
+    background-color: #1d2335;
+    border: 1px solid #193f5a;
+    color: #ffb241;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px #0d0d0d52;
+    transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    flex-shrink: 0;
+}
+
+.bt-balao-expiracao:hover {
+    background-color: #1b2a44;
+    border-color: #ffb241;
+    transform: scale(1.06);
+    box-shadow: 0 0 10px rgba(255, 178, 65, 0.4);
+}
+
+/* Painel Deslizante  */
+.painel-expiracao-deslizante {
+    max-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: max-width 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, padding 0.3s ease;
+    background-color: #111522;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 0;
+    margin-right: 0;
+    box-sizing: border-box;
+}
+
+/* Estado Ativo (Aberto) */
+.painel-expiracao-deslizante.ativo {
+    max-width: 220px;
+    opacity: 1;
+    padding: 8px 7px;
+    border-color: #193f5a;
+    margin-right: 8px;
+    box-shadow: 0 4px 12px #0d0d0d52;
 }
 
 .form-expiracao {
     display: flex;
     align-items: center;
     gap: 8px;
-    background-color: #111522;
-    border: 1px solid #193f5a;
-    padding: 6px 12px;
-    border-radius: 8px;
+    background: transparent;
+    border: none;
+    padding: 0;
 }
 
 .label-expiracao {
     color: #9dbee6;
-    font-size: 0.9rem;
+    font-size: 1rem;
     font-weight: 500;
 }
 
@@ -904,11 +967,12 @@ div.container_arq_env {
     background-color: #1d2335;
     color: #f0f6fc;
     border: 1px solid #193f5a;
-    padding: 6px 10px;
+    padding: 6px 7px;
     border-radius: 6px;
-    font-size: 0.9rem;
+    font-size: 1rem;
     cursor: pointer;
     outline: none;
+    gap: 6px;
     transition: background-color 0.3s ease;
 }
 

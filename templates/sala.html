@@ -213,16 +213,39 @@
     
     <!-- Configuração de Expiração -->
 {% if papel == 'admin' %}
-<div class="menu-expiracao-topo">
-    <form action="/sala/{{ sala_id }}/definir-expiracao" method="POST" class="form-expiracao">
-        <label for="duracao" class="label-expiracao">⏳ Expiração:</label>
-        <select name="duracao" id="duracao" onchange="this.form.submit()" class="select-expiracao">
-            <option value="1d" {% if expiracao_atual == '1d' %}selected{% endif %}>1 Dia</option>
-            <option value="1s" {% if expiracao_atual == '1s' %}selected{% endif %}>1 Semana</option>
-            <option value="1m" {% if expiracao_atual == '1m' %}selected{% endif %}>1 Mês</option>
-        </select>
-    </form>
+<div class="menu-expiracao-topo" id="containerExpiracao">
+    <button type="button" class="bt-balao-expiracao" id="btBalaoExpiracao" onclick="toggleMenuExpiracao(event)" title="Configurar Expiração">
+        <i class="fas fa-hourglass-half"></i>
+    </button>
+
+    <div class="painel-expiracao-deslizante" id="painelExpiracao">
+        <form action="/sala/{{ sala_id }}/definir-expiracao" method="POST" class="form-expiracao">
+            <label for="duracao" class="label-expiracao">⏳ Expiração:</label>
+            <select name="duracao" id="duracao" onchange="this.form.submit()" class="select-expiracao">
+                <option value="1d" {% if expiracao_atual == '1d' %}selected{% endif %}>1 Dia</option>
+                <option value="1s" {% if expiracao_atual == '1s' %}selected{% endif %}>1 Semana</option>
+                <option value="1m" {% if expiracao_atual == '1m' %}selected{% endif %}>1 Mês</option>
+            </select>
+        </form>
+    </div>
 </div>
+
+<script>
+    function toggleMenuExpiracao(event) {
+        event.stopPropagation();
+        const painel = document.getElementById('painelExpiracao');
+        painel.classList.toggle('ativo');
+    }
+
+    // Fecha p balão se clicar fora
+    window.addEventListener('click', (e) => {
+        const container = document.getElementById('containerExpiracao');
+        const painel = document.getElementById('painelExpiracao');
+        if (container && !container.contains(e.target)) {
+            painel.classList.remove('ativo');
+        }
+    });
+</script>
 {% endif %}
 
 
