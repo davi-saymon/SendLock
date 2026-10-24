@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sala {{ sala_id }} - SandLock</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dark-theme">
+    <div class="container">
+        <header class="header">
+            <h1>🔒 SendLock</h1>
+            <span class="badge">Sala: {{ sala_id }}</span>
+
+            {% if papel == 'admin' %}
+
+            <!-- Menu Deslizante Admin-->
+                <div class="menu-container" onclick="toggleMenu('admin')">
+                    <span class="badge admin-badge">
+                        👑 Administrador <i class="fas fa-chevron-right" id="seta-admin"></i>
+                    </span>
+                    <a href="{{ url_for('sair_sessao', sala_id = sala_id) }}" id="bt-sair-admin" class="bt-sair-deslizante"  onclick="event.stopPropagation();">
+                        <i class="fas fa-sing-out-alt"></i> Sair
+                    </a>
+                </div>
+
+                    <!-- Botão para abrir modal de PINs ativos -->
+                    <button type="button" class="bt-secundario-admin" onclick="abrirModalPinsAdmin()">
+                        <i class="fas fa-key"></i> PINs Ativos
+                    </button>
+                
+
+            {% elif papel == 'cohost' %}
+            
+            <!-- Menu Deslizante CoHost -->
+            <div class="menu-container" onclick="toggleMenu('cohost')">
+                <span class="badge cohost-badge">
+                    🛡 Coanfitrião <i class="fas fa-chevron-right" id="seta-cohost"></i>
+                </span>
+            
+                <a href="{{ url_for('sair_sessao', sala_id = sala_id) }}" id="bt-sair-cohost" class="bt-sair-deslizante" onclick="event.stopPropagation();">
+                    <i class="fas fa-sing-out-alt"></i> Sair
+                </a>
+            </div>
+            
+            {% else %}
+
+                <span class="badge guest-badge">👤 Convidado</span>
+
+                <!-- Botão para abrir o modal -->
+                 <button type="button" class="bt-secundario" onclick="abirModalPin()">
+                    <i class="fas fa-key"></i> Inserir PIN
+                 </button>
+
+            {% endif %}
+        </header>
+            
+        <main class="card">
+            <h2>Compartilhamento de Arquivos</h2>
+            <p>Envie arquivos temporários sem necessidade de cadastro.</p>
+
+
+            <!-- Formulário de Upload -->
+            <form id="uploadForm" action="{{ url_for('upload_arquivo', sala_id = sala_id) }}" method="POST" enctype="multipart/form-data">
+                <div class="upload-box">
+                    <p>Arraste os arquivos aqui ou clique para selecionar</p>
+                    <input type="file" name="arquivo" id="fileInput" multiple hidden>
+                    <button type="button" class="btn-primary" onclick="document.getElementById('fileInput').click()">
+                        Selecionar Arquivos
+                    </button>
+                </div>
+
+
+                <!-- Barra de Progresso-->
+                <div class="progresso_container" id="progressoContainer">
+                    <div class="barra_carregamento" id="barraCarregamento"></div>
+                </div>
+                <p class="texto_carregamento" id="textoCarregamento"></p>
+            </form>
+
+            <script>
+                const fileInput = document.getElementById('fileInput');
+                const uploadForm = document.getElementById('uploadForm');
+                const progressoContainer = document.getElementById('progressoContainer');
+                const barraCarregamento = document.getElementById('barraCarregamento');
+                const textoCarregamento = document.getElementById('textoCarregamento');
+
+                fileInput.addEventListener('change', function() {
+                    if (fileInput.files.length > 0) {
+                        const totalFiles = fileInput.files.length;
+                        const textoMsg = totalFiles > 1 ? `${totalFiles} arquivos selecionados` : fileInput.files[0].name;
+
+                        // Mostra a barra e o texto
+                        progressoContainer.style.display = 'block';
+                        textoCarregamento.style.display = 'block';
+                        textoCarregamento.innerText = `Carregando: ${textoMsg}...`;
+
+                        // Cria os dados do formulário para envio via AJAX
+                        const formData = new FormData(uploadForm);
+                        const xhr = new XMLHttpRequest();
+
+                        // Monitora o progresso real
+                        xhr.upload.addEventListener('progress', function(e) {
+                            if (e.lengthComputable) {
+                                const percentCompleta = Math.round((e.loaded / e.total) * 100);
+                                barraCarregamento.style.width = percentCompleta + '%';
+                                textoCarregamento.innerText = `Carregando: ${textoMsg} — ${percentCompleta}%`;
+                            }
+                        });
+
+                        // Quando o upload terminar...
+                        xhr.addEventListener('load', function() {
+                            if (xhr.status === 200) {
+                                // Mostra o toast
+                                mostrarToast('Upload concluído com sucesso!');
+
+                                // Recarrega a página para mostrar o arquivo na lista
+                                setTimeout(() => {
+                                    window.location.reload();
+                                }, 2000);
+                                
+                            } else {
+                                alert('Erro ao enviar o arquivo.')
+                            }
+                        });
+
+                        // Envia para a rota do Flask
+                        xhr.open('POST', uploadForm.action, true);
+                        xhr.send(formData);
+                    }
+                });
+
+                // Upload pela área (drag and drop)
+                const uploadBox = document.querySelector('.upload-box');
+
+                // Previne o comportamento padrão (abrir o arquivo no computador)
+                // Adiciona efeito quando o arquivo entra
+                ['dragenter', 'dragover'].forEach(eventName => {
+                    uploadBox.addEventListener(eventName, function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        uploadBox.classList.add('drag-over');
+                    }, false);
+                });
+
+                // Remove efeito quando o arquivo sai ou é solto
+                ['dragleave', 'drop'].forEach(eventName => {
+                    uploadBox.addEventListener(eventName, function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        uploadBox.classList.remove('drag-over');
+                    }, false);
+                });
+
+                // Quando soltar os arquivos
+                uploadBox.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    const droppedFiles = e.dataTransfer.files;
+
+                    if (droppedFiles.length > 0) {
+                        fileInput.files = droppedFiles;
+
+                        // Dispara o evento 'change' para acionar o upload e a barra
+                        const event = new Event('change');
+                        fileInput.dispatchEvent(event);
+                    }
+                });
+
+            </script>
+        </main>
+        <main class="card-arquivos">
+            <!-- Lista de Arquivos Enviados -->
+             <div class="container_arq_env">
+                <h3>Arquivos da sala:</h3>
+                {% if arquivos %}
+                    <ul>
+                        {% for item in arquivos %}
+                            <li>
+                                <!-- Nome do arquivo -->
+                                 <div class="nome-arquivo">
+                                    <i class="{{ obter_icone_arquivo(item) }}"></i>
+                                    <span>{{ item }}</span>
+                                 </div>
+
+                                
+                                <div class="acoes-bt-de">
+                                    <!-- Botão de download -->
+                                    <a href="{{ url_for('download_arquivo', sala_id=sala_id, filename=item) }}" class="bt-download" title="Baixar arquivo" data-url="{{ url_for('download_arquivo', sala_id=sala_id, filename=item) }}" onclick="baixarArquivoComNotificacao(this)">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+
+                                    <!-- Botão de excluir (apenas Admin e CoHost) -->
+                                    {% if papel in ['admin', 'cohost'] %}
+                                    <div class="div-bt-excluir">
+                                        <button type="button" class="bt-apagar" title="Excluir arquivo" data-url="{{ url_for('deletar_arquivo', sala_id=sala_id, filename=item) }}" onclick="abrirModalExclusao(this)">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>Nenhum arquivo enviado ainda.</p>
+                {% endif %}
+             </div>
+        </main>
+    </div>
+    
+    <!-- Configuração de Expiração -->
+{% if papel == 'admin' %}
+<div class="menu-expiracao-topo">
+    <form action="/sala/{{ sala_id }}/definir-expiracao" method="POST" class="form-expiracao">
+        <label for="duracao" class="label-expiracao">⏳ Expiração:</label>
+        <select name="duracao" id="duracao" onchange="this.form.submit()" class="select-expiracao">
+            <option value="1d" {% if expiracao_atual == '1d' %}selected{% endif %}>1 Dia</option>
+            <option value="1s" {% if expiracao_atual == '1s' %}selected{% endif %}>1 Semana</option>
+            <option value="1m" {% if expiracao_atual == '1m' %}selected{% endif %}>1 Mês</option>
+        </select>
+    </form>
+</div>
+{% endif %}
+
+
+    <!-- Modal de confirmação -->
+    <div id="modal-confirmacao" class="modal-sobreposto">
+        <div class="caixa-modal">
+            <h3>Excluir Arquivo</h3>
+            <p>Tem certeza que deseja apagar o arquivo?</p>
+            <div class="acoes-modal">
+                <button type="button" id="bt-cancelar" class="bt-modal-cancelar">Cancelar</button>
+                <form id="form-excluir-modal" method="POST" >
+                    <button type="submit" class="bt-modal-confirmar">Excluir</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Inserir PIN -->
+    <div id="modal-pin" class="modal-sobreposto-pin">
+        <div class="caixa-modal-pin">
+            <h3>Autenticação por PIN</h3>
+            <p>Insira o PIN para ter mais opções de acesso:</p>
+
+            <form action="{{ url_for('login_sala', sala_id = sala_id) }}" method="POST">
+                <div class="div-pin">
+                    <input type="password" name="pin" placeholder="Digite o PIN...">
+                </div>
+                <div class="acoes-modal-pin">
+                    <button type="button" id="bt-cancelar-pin" class="bt-modal-cancelar-pin">Cancelar</button>
+                    <button type="submit" class="bt-modal-confirmar-pin">Entrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de PINs Ativos (Admin) -->
+    <div id="modal-pins-admin" class="modal-sobreposto-admin">
+        <div class="caixa-modal-admin">
+            <h3>Chaves de Acesso da Sala</h3>
+            <p class="texto-modal-admin">Estes são os PINs secretos desta sala! Compartilhe apenas com quem confia:</p>
+
+            <div class="lista-pins">
+                <p class="lista-pin-admin">
+                    <strong>👑 PIN Administrador:</strong> 
+                    <code onclick="copiarTexto('{{ pin_admin }}', 'PIN de Administrador copiado!')" title="Clique para copiar">
+                        {{ pin_admin }} <i class="fas fa-copy"></i>
+                    </code>
+                </p>
+
+                <p class="lista-pin-cohost">
+                    <strong>🛡 PIN Coanfitrião:</strong> 
+                    <code onclick="copiarTexto('{{ pin_cohost }}', 'PIN de Coanfitrião copiado!')" title="Clique para copiar">
+                        {{ pin_cohost }} <i class="fas fa-copy"></i>
+                    </code>
+                </p>
+            </div>
+
+            <div class="acoes-modal-admin">
+                <button type="button" id="bt-fechar-pins" class="bt-modal-confirmar-admin">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Modal
+        const modal = document.getElementById('modal-confirmacao');
+        const formExcluir = document.getElementById('form-excluir-modal');
+        const btCancelar = document.getElementById('bt-cancelar');
+
+        function abrirModalExclusao(botao) {
+            const urlAcao = botao.getAttribute('data-url');
+            formExcluir.action = urlAcao; // Define a url correta
+            modal.style.display = 'flex'; // Mostra o modal
+        }
+
+        if (btCancelar) {
+            btCancelar.addEventListener('click', () => {
+                modal.style.display = 'none'; // Esconde o modal
+            });
+        }
+
+        // Fecha se clicar fora da ciaxa do modal
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    </script>
+
+    <!-- Toast (notificação) -->
+    <div id="toast-notificacao" class="toast-container">
+        <i class="fas fa-check-circle"></i>
+        <span id="toast-mensagem"></span>
+    </div>
+
+    <script>
+        function mostrarToast(mensagem, tipo = 'sucesso') {
+            const toast = document.getElementById('toast-notificacao')
+            const textoToast = document.getElementById('toast-mensagem');
+            const icone = toast.querySelector('i');
+
+            textoToast.innerText = mensagem;
+
+            // Altera o ícone e a cor
+            if (tipo === 'erro') {
+                icone.className = 'fas fa-exclamation-circle';
+                icone.style.color = '#ff0000';
+                icone.style.boxShadow = '0 0 7px #ff0000';
+                icone.style.borderRadius = '20px';
+
+            } else {
+                icone.className = 'fas fa-check-circle';
+                toast.style.borderColor = '';
+            }
+
+            toast.classList.add('show');
+
+            // Esconde automaticamente depois de 3s
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <script>
+                window.addEventListener('DOMContentLoaded', () => {
+                    // messages é uma tupla: (categoria, mensagem)
+                    const categoria = '{{ messages[0][0] }}';
+                    const mensagem = '{{ messages [0][1] }}';
+                    mostrarToast(mensagem, categoria);
+                });
+            </script>
+        {% endif %}
+    {% endwith %}
+
+
+    <script>
+        // Modal de PIN
+        const modalPin = document.getElementById('modal-pin');
+        const btCancelarPin = document.getElementById('bt-cancelar-pin');
+
+        function abirModalPin() {
+            if (modalPin) {
+                modalPin.style.display = 'flex';
+            }
+        }
+
+        if (btCancelarPin) {
+            btCancelarPin.addEventListener('click', () => {
+                modalPin.style.display = 'none';
+            });
+        }
+
+        // Fecha se clicar fora da caixa
+        window.addEventListener('click', (e) => {
+            if (e.target === modalPin) {
+                modalPin.style.display = 'none';
+            }
+        });
+
+        // Copiar PIN
+        function copiarTexto(texto, mensagemSucesso) {
+            navigator.clipboard.writeText(texto).then(() => {
+                mostrarToast(mensagemSucesso, 'sucesso');
+            }).catch(err => {
+                console.error('Erro ao copiar: ', err);
+            });
+        }
+
+
+    </script>
+
+    <script>
+        // Modal de PINs do Admin
+        const modalPinsAdmin = document.getElementById('modal-pins-admin');
+        const btFecharPins = document.getElementById('bt-fechar-pins');
+
+        function abrirModalPinsAdmin() {
+            if (modalPinsAdmin) {
+                modalPinsAdmin.style.display = 'flex';
+            }
+        }
+
+        if (btFecharPins) {
+            btFecharPins.addEventListener('click', () => {
+                modalPinsAdmin.style.display = 'none';
+            });
+        }
+
+        // Fecha se clicar fora da caixa
+        window.addEventListener('click', (e) => {
+            if (e.target === modalPinsAdmin) {
+                modalPinsAdmin.style.display = 'none';
+            }
+        });
+    </script>
+
+    <script>
+        // Botão Sair Deslizante
+        function toggleMenu(tipo) {
+            const btSair = document.getElementById('bt-sair-' + tipo);
+            const container = btSair.closest('.menu-container');
+            const seta = container.querySelector('.fa-chevron-right');
+
+            if (btSair) {
+                btSair.classList.toggle('ativo');
+
+                if (seta) {
+                    seta.style.transform = btSair.classList.contains('ativo') ? 'rotate(180deg)' : 'rotate(0deg)';
+                }
+            }
+        }
+
+
+        // Fecha o menu se clicar fora
+        window.addEventListener('click', (e) => {
+            document.querySelectorAll('.menu-container').forEach(container => {
+                if (!container.contains(e.target)) {
+                    const btSair = container.querySelector('.bt-sair-deslizante');
+                    const seta = container.querySelector('.fa-chevron-right');
+
+                    if (btSair && btSair.classList.contains('ativo')) {
+                        btSair.classList.remove('ativo');
+                        if (seta) seta.style.transform = 'rotate(0deg)';
+                    }
+                }
+            });
+        });
+    </script>
+
+    <script>
+        // Salas Recentes
+        const caminho = window.location.pathname.split('/');
+        const salaId = caminho[caminho.indexOf('sala') + 1];
+
+        if (salaId) {
+
+            let salasRecentes = JSON.parse(localStorage.getItem('sendlock-recentes') || '[]');
+
+            // Só adiciona se o ID ainda não estiver na lista de recentes
+            salasRecentes = salasRecentes.filter(id => id !== salaId);
+            
+            salasRecentes.unshift(salaId);
+
+            // Mantém apenas as últimas 5 salas
+            if (salasRecentes.length > 5) {
+                salasRecentes.pop();
+            }
+
+            localStorage.setItem('sendlock-recentes', JSON.stringify(salasRecentes));
+
+        }
+    </script>
+</body>
+</html>

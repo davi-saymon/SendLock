@@ -216,7 +216,9 @@ def download_arquivo(sala_id, filename):
     if os.path.exists(os.path.join(pasta_sala, filename)):
         return send_from_directory(pasta_sala, filename, as_attachment=True)
     else:
-        abort(404, description='Arquivo não encontrado!')
+        #abort(404, description='Arquivo não encontrado!')
+        flash('Arquivo não encontrado!', 'erro')
+        return redirect(url_for('ver_sala', sala_id = sala_id))
 
 
 
