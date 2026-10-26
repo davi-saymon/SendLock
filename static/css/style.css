@@ -1,5 +1,7 @@
 @import url('https://fonts.cdnfonts.com/css/glacial-indifference');
 
+/* #9dbee6 */
+
 /* Estilos Globais */
 * {
     margin: 0;
@@ -43,7 +45,7 @@ main h1 {
 
 main p {
     /* color: #5ccfff;*/
-    color: #9dbee6;
+    color: #88d0fe;
     text-align: center;
     font-size: 1.1875rem; 
     margin-top: 10px;
@@ -110,7 +112,7 @@ body.dark-theme {
     font-size: 1.06rem;
     font-weight: 600;
     background-color: #1d2335;
-    color: #9dbee6;
+    color: #88d0fe;
     border: 1px solid #193f5a;
     margin: 2px;
 }
@@ -134,7 +136,7 @@ body.dark-theme {
 
 
 .guest-badge {
-    background: #1b2a44;
+    background: #193155;
 }
 
 .bt-secundario {
@@ -206,7 +208,7 @@ body.dark-theme {
 
 .card-arquivos::-webkit-scrollbar-track {
     background: transparent;
-    margin-top: 62px;
+    margin-top: 81px;
     margin-bottom: 37px;
 }
 
@@ -235,7 +237,7 @@ body.dark-theme {
 }
 
 .card p {
-    color: #9dbee6;
+    color: #88d0fe;
     font-size: 1.125rem;
     margin-bottom: 24px;
 }
@@ -246,20 +248,20 @@ body.dark-theme {
     border-radius: 8px;
     padding: 40px 20px;
     background-color: #111522;
-    transition: border-color 0.3s ease;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
 }
 
 .upload-box:hover, 
 .upload-box.drag-over {
     border-color: #00c0ff;
     box-shadow: 0 0 4px #00c0ff;
-    background-color: #1b2a44;
+    background-color: #193155;
 }
 
 .upload-box p {
     margin-bottom: 16px;
     font-size: 1.125rem;
-    color: #9dbee6;
+    color: #88d0fe;
 }
 
 /* Botões */
@@ -272,11 +274,35 @@ body.dark-theme {
     font-weight: 600;
     border-radius: 6px;
     cursor: pointer;
+
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
     transition: background-color 0.3s ease, box-shadow 0.2s ease;
 }
 
+/* Camada do gradiente */
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    background: linear-gradient(to right, #007dff, #00c0ff);
+
+    /* Como começa */
+    opacity: 0;
+    z-index: -1;
+    transition: opacity 0.3s ease;
+}
+
+.btn-primary:hover::before {
+    opacity: 1;
+}
+
 .btn-primary:hover {
-    background-color: #00c0ff;
     box-shadow: 0 0 10px #00c0ff;
 }
 
@@ -303,7 +329,7 @@ div.container_arq_env {
     border-radius: 6px;
     border: 1px solid #193f5a;
     margin-bottom: 8px;
-    color: #9dbee6;
+    color: #88d0fe;
     font-size: 1.0625rem;
     display: flex;
     justify-content: space-between;
@@ -311,7 +337,7 @@ div.container_arq_env {
 
 .container_arq_env p {
     font-size: 1.090rem;
-    color: #9dbee6;
+    color: #88d0fe;
 }
 
 /* Download */
@@ -373,7 +399,7 @@ div.container_arq_env {
 
 .texto_carregamento {
     font-size: 0.85rem;
-    color: #9dbee6;
+    color: #88d0fe;
     margin-top: 5px;
     display: none;
 }
@@ -454,7 +480,7 @@ div.container_arq_env {
 }
 
 .caixa-modal p {
-    color: #9dbee6;
+    color: #88d0fe;
     font-size: 0.95rem;
     margin-bottom: 24px;
 }
@@ -469,7 +495,7 @@ div.container_arq_env {
 .bt-modal-cancelar {
     background: #181820;
     border: 1px solid #193f5a;
-    color: #9dbee6;
+    color: #88d0fe;
     cursor: pointer;
     padding: 8px 16px;
     border-radius: 6px;
@@ -537,7 +563,7 @@ div.container_arq_env {
 }
 
 .caixa-modal-pin p {
-    color: #9dbee6;
+    color: #88d0fe;
     margin-top: 5px;
 }
 
@@ -546,7 +572,7 @@ div.container_arq_env {
 .bt-modal-cancelar-pin {
     background: #181820;
     border: 1px solid #193f5a;
-    color: #9dbee6;
+    color: #88d0fe;
     cursor: pointer;
     padding: 8px 16px;
     border-radius: 6px;
@@ -613,14 +639,14 @@ div.container_arq_env {
 }
 
 .texto-modal-admin {
-    color: #9dbee6;
+    color: #88d0fe;
     margin-top: 15px;
     font-size: 1.08rem;
 }
 
 .lista-pins {
     margin: 20px 0;
-    text-align: left;
+    text-align: center;
     background: #181820;
     padding: 15px;
     font-size: 1.06rem;
@@ -640,13 +666,13 @@ div.container_arq_env {
 .fa-copy {
     font-size: 1rem;
     margin-left: 8px;
-    color: #9dbee6;
+    color: #88d0fe;
 }
 
 .bt-modal-confirmar-admin {
     background: #181820;
     border: 1px solid #193f5a;
-    color: #9dbee6;
+    color: #88d0fe;
     cursor: pointer;
     padding: 8px 16px;
     border-radius: 6px;
@@ -814,29 +840,29 @@ div.container_arq_env {
 
 .container-recentes {
     display: none;
-    gap: 10px;
     flex-direction: column;
     text-align: center;
     align-items: center;
     background-color: #1d2335;
     border: 1px solid #193f5a;
     border-radius: 12px;
-    padding: 20px;
+    padding: 20px 20px;
     margin-top: 30px;
-    width: 100%;
-    max-width: 900px;
+    
+    max-width: 600px;
+    height: auto;
 }
 
 .container-recentes p {
     color: #f0f6fc;
     font-size: 1.1rem;
-    
-
+    margin-bottom: 15px;
 }
 
 .div-recentes {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     gap: 8px;
     width: 100%;
     align-items: center;
@@ -846,7 +872,7 @@ div.container_arq_env {
 .bt-sala-recente {
     background: #111522;
     border: 1px solid #00c0ff;
-    color: #9dbee6;
+    color: #88d0fe;
     padding: 8px 10px;
     border-radius: 6px;
     text-decoration: none;
@@ -856,26 +882,38 @@ div.container_arq_env {
 }
 
 .bt-sala-recente:hover {
-    background: #1b2a44;
+    background: #193155;
 }
 
 /* Botão de excluir sala recente */
 
 .sala-recente-wrapper {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 5px;
-    margin-bottom: 8px;
+    position: relative;
+    background: #111522;
+    border: 1px solid #193f5a;
+    border-radius: 6px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
+
+.sala-recente-wrapper:hover {
+    border-color: #420000;
+    box-shadow: 1px 0 2px #700000;
+}
+
 
 .bt-excluir-sala {
     background: transparent;
     border: none;
     color: #ff0000;
-    font-size: 1rem;
+    font-size: 1.3rem;
     cursor: pointer;
-    padding: 2px 6px;
-    border-radius: 4px;
+    padding: 1px 5px;
+    border-radius: 0 4px 4px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transition: background 0.3s ease;
 }
 
@@ -887,7 +925,7 @@ div.container_arq_env {
 
 .menu-expiracao-topo {
     position: absolute;
-    top: 50px;
+    top: 40px;
     right: 25px;
     z-index: 100;
     display: flex;
@@ -917,7 +955,7 @@ div.container_arq_env {
 }
 
 .bt-balao-expiracao:hover {
-    background-color: #1b2a44;
+    background-color: #193155;
     border-color: #ffb241;
     transform: scale(1.06);
     box-shadow: 0 0 10px rgba(255, 178, 65, 0.4);
@@ -958,7 +996,7 @@ div.container_arq_env {
 }
 
 .label-expiracao {
-    color: #9dbee6;
+    color: #88d0fe;
     font-size: 1rem;
     font-weight: 500;
 }
@@ -977,5 +1015,74 @@ div.container_arq_env {
 }
 
 .select-expiracao:hover {
-    background-color: #1b2a44;
+    background-color: #193155;
+}
+
+/* Cabeçalho da Lista de Arquivos */
+.cabecalho-arquivos {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.acoes-bts-cabecalho {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Botões de Ação */
+.bt-acao-cabecalho {
+    color: #f0f6fc;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.bt-download-tudo {
+    background-color: #111522;
+    border: 1px solid #193f5a;
+    border-radius: 8px;
+    padding: 9px;
+    font-size: 0.9rem;
+    font-weight: 501;
+    position: relative;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.bt-download-tudo:hover {
+    background-color: #00c0ff;
+    border-color: #00c0ff;
+    box-shadow: 0 0 10px #00c0ff;
+}
+
+.bt-excluir-tudo {
+    background-color: #111522;
+    border: 1px solid #700000;
+    border-radius: 9px;
+    padding: 8px;
+    font-size: 0.9rem;
+    font-weight: 501;
+    position: relative;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s;
+}
+
+.bt-excluir-tudo:hover {
+    background-color: #ff0000;
+    border-color: #ff0000;
+    box-shadow: 0 0 7px #ff0000; 
+
 }

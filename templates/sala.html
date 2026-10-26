@@ -174,39 +174,62 @@
         <main class="card-arquivos">
             <!-- Lista de Arquivos Enviados -->
              <div class="container_arq_env">
-                <h3>Arquivos da sala:</h3>
-                {% if arquivos %}
-                    <ul>
-                        {% for item in arquivos %}
-                            <li>
-                                <!-- Nome do arquivo -->
-                                 <div class="nome-arquivo">
-                                    <i class="{{ obter_icone_arquivo(item) }}"></i>
-                                    <span>{{ item }}</span>
-                                 </div>
+                <div class="cabecalho-arquivos">
+                    <h3>Arquivos da sala:</h3>
+                    
+                    {% if arquivos %}
+                    <div class="acoes-bts-cabecalho">
+                        <!-- Botão Baixar Tudo (.zip) -->
+                         <a href="{{ url_for('download_todos_arquivos', sala_id = sala_id) }}" class="bt-acao-cabecalho bt-download-tudo" title="Baixar todos os arquivos">
+                            <i class="fas fa-file-archive"></i> Baixar Tudo
+                         </a>
 
-                                
-                                <div class="acoes-bt-de">
-                                    <!-- Botão de download -->
-                                    <a href="{{ url_for('download_arquivo', sala_id=sala_id, filename=item) }}" class="bt-download" title="Baixar arquivo" data-url="{{ url_for('download_arquivo', sala_id=sala_id, filename=item) }}" onclick="baixarArquivoComNotificacao(this)">
-                                        <i class="fas fa-download"></i>
-                                    </a>
+                        <!-- Botão Excluir Tudo (Apenas Admin e CoHost) -->
+                        {% if papel in ['admin', 'cohost'] %}
+                        <button type="button" class="bt-acao-cabecalho bt-excluir-tudo" title="Excluir todos os arquivos" onclick="abrirModalExclusaoTodos()">
+                            <i class="fas fa-trash-alt"></i> Excluir Tudo
+                        </button>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
 
-                                    <!-- Botão de excluir (apenas Admin e CoHost) -->
-                                    {% if papel in ['admin', 'cohost'] %}
-                                    <div class="div-bt-excluir">
-                                        <button type="button" class="bt-apagar" title="Excluir arquivo" data-url="{{ url_for('deletar_arquivo', sala_id=sala_id, filename=item) }}" onclick="abrirModalExclusao(this)">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
+                <!-- Lista rolável de arquivos -->
+                <div class="lista-arquivos-rolavel">
+                    {% if arquivos %}
+                        <ul>
+                            {% for item in arquivos %}
+                                <li>
+                                    <!-- Nome do arquivo -->
+                                    <div class="nome-arquivo">
+                                        <i class="{{ obter_icone_arquivo(item) }}"></i>
+                                        <span>{{ item }}</span>
                                     </div>
-                                    {% endif %}
-                                </div>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p>Nenhum arquivo enviado ainda.</p>
-                {% endif %}
+
+                                    
+                                    <div class="acoes-bt-de">
+                                        <!-- Botão de download -->
+                                        <a href="{{ url_for('download_arquivo', sala_id=sala_id, filename=item) }}" class="bt-download" title="Baixar arquivo" data-url="{{ url_for('download_arquivo', sala_id=sala_id, filename=item) }}" onclick="baixarArquivoComNotificacao(this)">
+                                            <i class="fas fa-download"></i>
+                                        </a>
+
+                                        <!-- Botão de excluir (apenas Admin e CoHost) -->
+                                        {% set token_atual = session.get('token_convidado') %}
+                                        {% if papel in ['admin', 'cohost'] or donos_arquivos.get(item) == token_atual %}
+                                        <div class="div-bt-excluir">
+                                            <button type="button" class="bt-apagar" title="Excluir arquivo" data-url="{{ url_for('deletar_arquivo', sala_id=sala_id, filename=item) }}" onclick="abrirModalExclusao(this)">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>Nenhum arquivo enviado ainda.</p>
+                    {% endif %}
+                </div>
              </div>
         </main>
     </div>
@@ -500,6 +523,41 @@
             localStorage.setItem('sendlock-recentes', JSON.stringify(salasRecentes));
 
         }
+    </script>
+
+    <!-- Modal de confirmação para Excluir Todos -->
+    <div id="modal-confirmacao-todos" class="modal-sobreposto">
+        <div class="caixa-modal">
+            <h3>Excluir Todos os Arquivos</h3>
+            <p>Tem certeza que deseja excluir TODOS os arquivos desta sala?</p>
+            <div class="acoes-modal">
+                <button type="button" id="bt-cancelar-todos" class="bt-modal-cancelar">Cancelar</button>
+                <form action="{{ url_for('deletar_todos_arquivos', sala_id = sala_id) }}" method="POST">
+                    <button type="submit" class="bt-modal-confirmar">Excluir Tudo</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const modalTodos = document.getElementById('modal-confirmacao-todos');
+        const btCancelarTodos = document.getElementById('bt-cancelar-todos');
+
+        function abrirModalExclusaoTodos() {
+            if (modalTodos) modalTodos.style.display = 'flex';
+        }
+
+        if (btCancelarTodos) {
+            btCancelarTodos.addEventListener('click', () => {
+                modalTodos.style.display = 'none';
+            });
+        }
+
+        window.addEventListener('click', (e) => {
+            if (e.target === modalTodos) {
+                modalTodos.style.display = 'none';
+            }
+        });
     </script>
 </body>
 </html>

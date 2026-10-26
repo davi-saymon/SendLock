@@ -4,7 +4,9 @@ import secrets
 import string
 import shutil
 import time
-from flask import Flask, render_template, redirect, url_for, request, flash, send_from_directory, abort, session, make_response
+import io
+import zipfile
+from flask import Flask, render_template, redirect, url_for, request, flash, send_from_directory, abort, session, make_response, send_file
 from werkzeug.utils import secure_filename
 
 salas_db = {}
@@ -51,6 +53,11 @@ def obter_icone_arquivo(filename):
 app.jinja_env.globals.update(obter_icone_arquivo = obter_icone_arquivo)
 
 
+def obter_ou_criar_token_convidado():
+    if 'token_convidado' not in session:
+        session['token_convidado'] = str(uuid.uuid4())[:8]
+    return session['token_convidado']
+
 
 # Rota principal (Página de início)
 @app.route('/')
@@ -78,7 +85,8 @@ def criar_sala():
         'pin_admin': pin_admin,
         'pin_cohost': pin_cohost,
         'criado_em': time.time(),
-        'expiracao_chave': '1d' # Padrão: 1 Dia
+        'expiracao_chave': '1d', # Padrão: 1 Dia
+        'donos_arquivos': {}
     }
 
     # Passa os PINs para o usuário ver
@@ -125,6 +133,12 @@ def ver_sala(sala_id):
     # Recupera o papel atual do utilizador (padrão: 'convidado')
     papel = session.get(f'papel_{sala_id}', 'convidado')
 
+    # Garante que o visitante tem um token único de convidado
+    token_atual = obter_ou_criar_token_convidado()
+
+    # Pega os donos dos arquivos de sala (ou cria um dicionário vazio se não existir)
+    sala_atual = salas_db[sala_id]
+    donos_arquivos = sala_atual.get('donos_arquivos', {})
 
     # Listar os arquivos armazenados na pasta e uploads
     arquivos = os.listdir(app.config['UPLOAD_FOLDER'])
@@ -144,7 +158,8 @@ def ver_sala(sala_id):
         arquivos = arquivos, 
         pin_admin = sala_atual['pin_admin'],
         pin_cohost = sala_atual['pin_cohost'],
-        expiracao_atual = chave_expiracao
+        expiracao_atual = chave_expiracao,
+        donos_arquivos = donos_arquivos
     )
 
 
@@ -192,6 +207,14 @@ def upload_arquivo(sala_id):
     pasta_sala = os.path.join(app.config['UPLOAD_FOLDER'], sala_id)
     os.makedirs(pasta_sala, exist_ok=True)
 
+    token_atual = obter_ou_criar_token_convidado()
+    sala = salas_db[sala_id]
+
+    
+    if 'donos_arquivos' not in sala:
+            sala['donos_arquivos'] = {}
+
+
     for arquivo in arquivos:
         if arquivo:
             # Sanitiza (Detetiza kk) o nome do arquivo para segurança
@@ -200,6 +223,8 @@ def upload_arquivo(sala_id):
             # Salva o arquivo DENTRO da pasta específica da sala
             caminho_salvar = os.path.join(pasta_sala, nome_seguro)
             arquivo.save(caminho_salvar)
+
+            sala['donos_arquivos'][nome_seguro] = token_atual
 
     flash('Arquivo enviado com sucesso!', 'sucesso')
     return redirect(url_for('ver_sala', sala_id = sala_id))
@@ -228,8 +253,13 @@ def deletar_arquivo(sala_id, filename):
 
     # Verifica o papel atual: apenas Admin e CoHost podem apagar
     papel = session.get(f'papel_{sala_id}', 'convidado')
+    token_atual = obter_ou_criar_token_convidado()
 
-    if papel not in ['admin', 'cohost']:
+    sala = salas_db.get(sala_id, {})
+    donos = sala.get('donos_arquivos', {})
+    dono_arquivo = donos.get(filename)
+
+    if papel not in ['admin', 'cohost'] and token_atual != dono_arquivo:
         flash('Acesso negado: apenas Admiistradores e Coanfitriões podem excluir arquivos.', 'erro')
         return redirect(url_for('ver_sala', sala_id = sala_id))
 
@@ -239,6 +269,10 @@ def deletar_arquivo(sala_id, filename):
 
     if os.path.exists(caminho_arquivo):
         os.remove(caminho_arquivo)
+
+        if filename in donos:
+            del donos[filename]
+
         flash('Arquivo excluído com sucesso!', 'sucesso')
 
     return redirect(url_for('ver_sala', sala_id = sala_id))
@@ -283,6 +317,60 @@ def definir_expiracao(sala_id):
         if sala_id in salas_db:
             salas_db[sala_id]['expiracao_chave'] = nova_opcao
             flash(f'Tempo de expiração atualizado', 'sucesso')
+
+    return redirect(url_for('ver_sala', sala_id = sala_id))
+
+
+
+@app.route('/sala/<sala_id>/download-todos')
+def download_todos_arquivos(sala_id):
+    pasta_sala = os.path.join(app.config['UPLOAD_FOLDER'], sala_id)
+
+    if not os.path.exists(pasta_sala) or not os.listdir(pasta_sala):
+        flash('Nenhum arquivo para baixar.', 'erro')
+        return redirect(url_for('ver_sala', sala_id = sala_id))
+
+    # Cria o arquivo zip diretamente na memória RAM
+    memory_file = io.BytesIO()
+    with zipfile.ZipFile(memory_file, 'w', zipfile.ZIP_DEFLATED) as zf:
+        for root, dirs, files in os.walk(pasta_sala):
+            for file in files:
+                caminho_completo = os.path.join(root, file)
+                zf.write(caminho_completo, arcname=file)
+
+    memory_file.seek(0)
+
+    return send_file(
+        memory_file,
+        mimetype='application/zip',
+        as_attachment=True,
+        download_name=f'SendLock_Sala_{sala_id}.zip'
+    )
+
+
+
+# Deletar TODOS os arquivos
+@app.route('/sala/<sala_id>/deletar-todos', methods=['POST'])
+def deletar_todos_arquivos(sala_id):
+    papel = session.get(f'papel_{sala_id}', 'convidado')
+
+    if papel not in ['admin', 'cohost']:
+        flash('Acesso negado.', 'erro')
+        return redirect(url_for('ver_sala', sala_id = sala_id))
+
+    pasta_sala = os.path.join(app.config['UPLOAD_FOLDER'], sala_id)
+
+    if os.path.exists(pasta_sala):
+        # Esvazia os arquivos mantendo a pasta da sala
+        for filename in os.listdir(pasta_sala):
+            caminho_arquivo = os.path.join(pasta_sala, filename)
+            if os.path.isfile(caminho_arquivo):
+                os.remove(caminho_arquivo)
+
+        if sala_id in salas_db:
+            salas_db[sala_id]['donos_arquivos'] = {}
+
+        flash('Todos os arquivos foram excluídos com sucesso!', 'sucesso')
 
     return redirect(url_for('ver_sala', sala_id = sala_id))
 
